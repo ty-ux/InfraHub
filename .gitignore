@@ -1,0 +1,145 @@
+# Project-specific exclusions
+test-results/
+
+# Windows system files
+Microsoft/
+
+# Java test files
+**/src/test/
+
+# 例外：主机登记交付涉及的这三个后端测试必须能被正常纳入版本管理。
+# **/src/test/ 排除的是目录本身，git 不允许直接重新包含被排除目录里的文件，
+# 所以只能逐级取消父目录排除、再单独放行这三个文件；本模块其余测试仍然保持被忽略。
+!infrahub-release/src/test/
+infrahub-release/src/test/*
+!infrahub-release/src/test/java/
+infrahub-release/src/test/java/*
+!infrahub-release/src/test/java/com/
+infrahub-release/src/test/java/com/*
+!infrahub-release/src/test/java/com/infrahub/
+infrahub-release/src/test/java/com/infrahub/*
+!infrahub-release/src/test/java/com/infrahub/release/
+infrahub-release/src/test/java/com/infrahub/release/*
+!infrahub-release/src/test/java/com/infrahub/release/service/
+infrahub-release/src/test/java/com/infrahub/release/service/*
+!infrahub-release/src/test/java/com/infrahub/release/service/AssetHostServiceTest.java
+!infrahub-release/src/test/java/com/infrahub/release/pipeline/
+infrahub-release/src/test/java/com/infrahub/release/pipeline/*
+!infrahub-release/src/test/java/com/infrahub/release/pipeline/RegisterArtifactPipelineStepExecutorTest.java
+!infrahub-release/src/test/java/com/infrahub/release/controller/
+infrahub-release/src/test/java/com/infrahub/release/controller/*
+!infrahub-release/src/test/java/com/infrahub/release/controller/AssetHostCreateHttpContractTest.java
+!infrahub-release/src/test/java/com/infrahub/release/controller/AssetHostCreateAuthorizationTest.java
+
+# 例外：主机/实例状态采集交付涉及的测试同样必须能被正常纳入版本管理。
+# 被静默忽略的测试等于没有证据——审查方看不到、CI 也不会跑，因此逐文件放行。
+!infrahub-release/src/test/java/com/infrahub/release/service/HostInstanceCollectionServiceTest.java
+!infrahub-release/src/test/java/com/infrahub/release/service/SshProcessCollectionObserverTest.java
+!infrahub-release/src/test/java/com/infrahub/release/service/CollectionStateQueryServiceTest.java
+!infrahub-release/src/test/java/com/infrahub/release/service/HostInstanceCollectionSchedulerTest.java
+!infrahub-release/src/test/java/com/infrahub/release/config/
+infrahub-release/src/test/java/com/infrahub/release/config/*
+!infrahub-release/src/test/java/com/infrahub/release/config/HostInstanceCollectionPropertiesTest.java
+!infrahub-release/src/test/java/com/infrahub/release/mapper/
+infrahub-release/src/test/java/com/infrahub/release/mapper/*
+!infrahub-release/src/test/java/com/infrahub/release/mapper/MonitorCollectionStateMapperPostgresTest.java
+
+# 例外：写回一致性（事务边界 / 目标版本门禁 / 单目标异常隔离）的真实 PG 用例，
+# 以及迁移打包与真实 Flyway 的用例，都是本批交付的核心证据，必须能被审查方看到。
+!infrahub-release/src/test/java/com/infrahub/release/service/CollectionWriteBackPostgresTest.java
+!infrahub-release/src/test/java/com/infrahub/release/service/CollectionWriteBackServiceTransactionTest.java
+!infrahub-release/src/test/java/com/infrahub/release/service/CollectionAdmissionBindingTest.java
+!infrahub-release/src/test/java/com/infrahub/release/service/EnvConfigDocumentServiceTest.java
+
+# 例外：infrahub-infra / infrahub-web 两个模块的测试此前没有任何放行条目，
+# 本批新增的进程回收用例与 Flyway 隔离库用例同样逐级取消父目录排除后放行。
+!infrahub-infra/src/test/
+infrahub-infra/src/test/*
+!infrahub-infra/src/test/java/
+infrahub-infra/src/test/java/*
+!infrahub-infra/src/test/java/com/
+infrahub-infra/src/test/java/com/*
+!infrahub-infra/src/test/java/com/infrahub/
+infrahub-infra/src/test/java/com/infrahub/*
+!infrahub-infra/src/test/java/com/infrahub/infra/
+infrahub-infra/src/test/java/com/infrahub/infra/*
+!infrahub-infra/src/test/java/com/infrahub/infra/ssh/
+infrahub-infra/src/test/java/com/infrahub/infra/ssh/*
+!infrahub-infra/src/test/java/com/infrahub/infra/ssh/CliSshExecutorServiceProcessReclamationTest.java
+
+!infrahub-web/src/test/
+infrahub-web/src/test/*
+!infrahub-web/src/test/java/
+infrahub-web/src/test/java/*
+!infrahub-web/src/test/java/com/
+infrahub-web/src/test/java/com/*
+!infrahub-web/src/test/java/com/infrahub/
+infrahub-web/src/test/java/com/infrahub/*
+!infrahub-web/src/test/java/com/infrahub/web/
+infrahub-web/src/test/java/com/infrahub/web/*
+!infrahub-web/src/test/java/com/infrahub/web/migration/
+infrahub-web/src/test/java/com/infrahub/web/migration/*
+!infrahub-web/src/test/java/com/infrahub/web/migration/FlywayIsolatedPostgresTest.java
+!infrahub-web/src/test/java/com/infrahub/web/migration/MigrationIsolationSupport.java
+!infrahub-web/src/test/java/com/infrahub/web/migration/LegacyMissingMigrationGateIsolatedTest.java
+!infrahub-web/src/test/java/com/infrahub/web/migration/NotificationAlertTitleIsolatedTest.java
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Build outputs
+target/
+*.class
+*.jar
+*.war
+
+# Node/Frontend
+node_modules/
+dist/
+coverage/
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+# InfraHub 测试环境 Compose 的现场凭据文件（模板：deploy/.env.infrahub-test.example）
+deploy/.env.infrahub-test
+*.local.xml
+
+# Claude/OMC
+.claude/
+.omc/
+.m2/
+.mvn/
+
+# Playwright
+.playwright-cli/
+pw-*/
+test-results-*/
+hplus1-playwright-*/
+*.trace.zip
+trace.zip
+playwright-report/
+
+# Sensitive config (use .example files)
+application.yml
+!application.yml.example
+
+# Local deployment credentials and diagnostic artifacts
+.env.*
+!.env.example
+!deploy/.env.infrahub-test.example
+*.pem
+*.key
+*.p12
+*.pfx
+k8s/secret.yaml
+*.har
+*.trace

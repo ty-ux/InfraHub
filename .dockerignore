@@ -1,0 +1,45 @@
+# InfraHub - Docker build context exclusions
+# Applies to both the backend (infrahub-web) and frontend (infrahub-console) build contexts.
+
+# Version control
+.git
+.gitignore
+
+# Local tooling state
+.claude
+.idea
+.vscode
+*.iml
+
+# Documentation is not needed inside any image build context.
+docs
+
+# 数据库目录里只有两件事真正属于 Web 制品：
+#   db/flyway/sql/                                    迁移脚本（infrahub-web/pom.xml 映射到 classpath:db/migration）
+#   db/flyway/legacy-missing-migration-allowlist.txt   冻结的"缺失迁移"例外清单（映射到 classpath:db/migration-policy）
+# 其余（bootstrap 初始化、cleanup、验收与测试数据脚本）一律不进入构建上下文。
+# 只有这两项会由 Dockerfile 显式 COPY，单一的版本受控来源仍是仓库根的 db/。
+db/**
+!db/flyway/
+!db/flyway/sql/
+!db/flyway/sql/**
+!db/flyway/legacy-missing-migration-allowlist.txt
+
+# 本地运行配置：该文件未被版本控制（.gitignore），内容含真实数据库连接与密钥。
+# 镜像内的运行期配置一律来自环境变量（见 docker-compose.infrahub-test.yml），
+# 因此它不得进入构建上下文，也不得进入镜像。
+infrahub-web/src/main/resources/application.yml
+
+# Build outputs
+**/target
+**/node_modules
+**/dist
+
+# Environment & secrets (never enter a build context or image)
+.env
+.env.*
+!deploy/.env.example
+
+# Logs and misc
+*.log
+npm-debug.log*

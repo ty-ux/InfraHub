@@ -1,0 +1,356 @@
+// InfraHub console — compatibility layer over the Console token system.
+// tokens.css owns the palette, faces, scale and both colourways; this file maps
+// the project's existing --ih-* names onto them so every view follows the theme.
+
+:root {
+  /* Warm neutral steps (kept for older views) */
+  --ih-gray-50: var(--color-paper-2);
+  --ih-gray-100: var(--color-paper-3);
+  --ih-gray-150: var(--color-rule);
+  --ih-gray-200: var(--color-rule);
+  --ih-gray-300: var(--color-rule-2);
+  --ih-gray-400: var(--color-muted);
+  --ih-gray-500: var(--color-muted);
+  --ih-gray-600: var(--color-ink-2);
+  --ih-gray-700: var(--color-ink-2);
+  --ih-gray-800: var(--color-ink);
+  --ih-gray-850: var(--color-ink);
+  --ih-gray-900: var(--color-ink);
+  --ih-gray-950: var(--color-ink);
+
+  /* Grounds */
+  --ih-bg-page: var(--color-paper);
+  --ih-bg-content: var(--color-paper-2);
+  --ih-bg-card: var(--color-paper-2);
+  --ih-bg-elevated: var(--color-paper-2);
+  --ih-bg-subtle: var(--color-paper-3);
+  --ih-bg-dropdown: var(--color-paper-2);
+  --ih-bg-table-header: var(--color-paper-3);
+  --ih-bg-row-hover: var(--color-row-hover);
+  --ih-bg-disabled: var(--color-paper-3);
+  --ih-bg-glass: var(--color-wash);
+  --ih-bg-glass-heavy: var(--color-wash);
+
+  /* Graphite rail */
+  --ih-bg-sidebar: var(--color-rail);
+  --ih-bg-sidebar-hover: var(--color-rail-2);
+  --ih-bg-sidebar-active: var(--color-rail-accent-soft);
+  --ih-sidebar-text: var(--color-rail-ink-2);
+  --ih-sidebar-text-muted: var(--color-rail-muted);
+  --ih-sidebar-icon: var(--color-rail-muted);
+  --ih-sidebar-icon-active: var(--color-rail-accent);
+  --ih-sidebar-border: var(--color-rail-rule);
+  --ih-sidebar-hover-border: var(--color-rail-rule);
+  --ih-sidebar-active-border: var(--color-rail-accent);
+  --ih-sidebar-focus: var(--color-rail-accent);
+  --ih-sidebar-sheen: transparent;
+  --ih-sidebar-brand-bg: transparent;
+  --ih-sidebar-brand-border: var(--color-rail-rule);
+  --ih-sidebar-brand-text: var(--color-rail-accent);
+
+  /* Amber: a person, the current thing, the one primary action */
+  --ih-primary: var(--color-accent);
+  --ih-primary-hover: var(--color-accent-hover);
+  --ih-primary-active: var(--color-accent-active);
+  --ih-primary-bg: var(--color-accent-soft);
+  --ih-primary-bg-hover: var(--color-accent-soft-2);
+  --ih-primary-dark: var(--color-accent-active);
+  --ih-primary-faint: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  --ih-primary-solid: var(--color-accent);
+  --ih-primary-solid-hover: var(--color-accent-hover);
+  --ih-primary-solid-active: var(--color-accent-active);
+  --ih-selection-bg: color-mix(in oklab, var(--color-accent) 24%, transparent);
+
+  /* Status */
+  --ih-success: var(--color-ok);
+  --ih-success-hover: color-mix(in oklab, var(--color-ok) 84%, var(--color-ink));
+  --ih-success-bg: var(--color-ok-soft);
+  --ih-success-border: color-mix(in oklab, var(--color-ok) 30%, transparent);
+
+  --ih-warning: var(--color-accent);
+  --ih-warning-hover: var(--color-accent-hover);
+  --ih-warning-bg: var(--color-accent-soft);
+  --ih-warning-border: color-mix(in oklab, var(--color-accent) 30%, transparent);
+
+  --ih-danger: var(--color-bad);
+  --ih-danger-hover: var(--color-bad-hover);
+  --ih-danger-bg: var(--color-bad-soft);
+  --ih-danger-border: color-mix(in oklab, var(--color-bad) 30%, transparent);
+
+  --ih-info: var(--color-cool);
+  --ih-info-hover: var(--color-cool-hover);
+  --ih-info-bg: var(--color-cool-soft);
+  --ih-info-border: color-mix(in oklab, var(--color-cool) 30%, transparent);
+
+  --ih-running: var(--color-cool);
+  --ih-running-bg: var(--color-cool-soft);
+
+  /* Rules */
+  --ih-border: var(--color-rule);
+  --ih-border-light: var(--color-rule);
+  --ih-border-dark: var(--color-rule-2);
+  --ih-border-subtle: color-mix(in oklab, var(--color-rule) 60%, transparent);
+  --ih-border-focus: var(--color-accent);
+  --ih-border-transparent: transparent;
+
+  /* Text */
+  --ih-text-primary: var(--color-ink);
+  --ih-text-secondary: var(--color-muted);
+  --ih-text-placeholder: var(--color-placeholder);
+  --ih-text-disabled: var(--color-disabled);
+  --ih-text-inverse: var(--color-accent-ink);
+  --ih-text-link: var(--color-cool);
+  --ih-text-inverse-muted: color-mix(in oklab, var(--color-accent-ink) 62%, transparent);
+
+  /* Faces */
+  --ih-font-family: var(--font-body);
+  --ih-font-family-mono: var(--font-outlier);
+
+  --ih-font-size-xs: var(--text-xs);
+  --ih-font-size-sm: var(--text-xs);
+  --ih-font-size-base: var(--text-md);
+  --ih-font-size-md: var(--text-md);
+  --ih-font-size-lg: var(--text-lg);
+  --ih-font-size-xl: var(--text-xl);
+  --ih-font-size-2xl: var(--text-xl);
+  --ih-font-size-3xl: var(--text-2xl);
+
+  --ih-font-page-title: var(--display-weight) var(--text-xl)/1.25 var(--font-body);
+  --ih-font-section-title: var(--display-weight) var(--text-lg)/1.35 var(--font-body);
+  --ih-font-body: 400 var(--text-md)/1.55 var(--font-body);
+  --ih-font-body-md: 400 var(--text-md)/1.55 var(--font-body);
+  --ih-font-body-sm: 400 var(--text-xs)/1.5 var(--font-body);
+  --ih-font-caption: 400 var(--text-xs)/1.5 var(--font-body);
+  --ih-font-code: 400 var(--text-xs)/1.6 var(--font-outlier);
+  --ih-font-label: 500 var(--text-xs)/1.4 var(--font-body);
+
+  /* Space */
+  --ih-spacing-1: var(--space-2xs);
+  --ih-spacing-2: 6px;
+  --ih-spacing-3: var(--space-xs);
+  --ih-spacing-4: 10px;
+  --ih-spacing-5: var(--space-sm);
+  --ih-spacing-6: var(--space-md);
+  --ih-spacing-7: 20px;
+  --ih-spacing-8: var(--space-lg);
+  --ih-spacing-10: var(--space-xl);
+  --ih-spacing-12: var(--space-2xl);
+
+  --ih-spacing-xs: var(--space-2xs);
+  --ih-spacing-sm: var(--space-xs);
+  --ih-spacing-md: var(--space-sm);
+  --ih-spacing-lg: var(--space-md);
+  --ih-spacing-xl: 20px;
+  --ih-spacing-2xl: var(--space-lg);
+
+  --ih-page-padding: var(--gutter-page);
+  --ih-section-gap: var(--space-md);
+
+  /* Shape */
+  --ih-radius-sm: var(--radius-chip);
+  --ih-radius-md: var(--radius-field);
+  --ih-radius-lg: var(--radius-panel);
+  --ih-radius-xl: var(--radius-panel);
+  --ih-radius-2xl: var(--radius-panel);
+  --ih-radius-full: var(--radius-full);
+
+  /* No floating surfaces: separation comes from a 1px rule */
+  --ih-shadow-xs: none;
+  --ih-shadow-sm: none;
+  --ih-shadow-md: none;
+  --ih-shadow-lg: none;
+  --ih-shadow-xl: none;
+  --ih-shadow-shell: none;
+  --ih-shadow-card: none;
+  --ih-shadow-card-hover: none;
+  --ih-shadow-elevated: none;
+  --ih-shadow-modal: none;
+  --ih-shadow-dropdown: none;
+  --ih-shadow-primary: none;
+  --ih-shadow-ring-focus: 0 0 0 3px var(--color-ring);
+
+  /* Layout */
+  --ih-header-height: var(--header-h);
+  --ih-sidebar-width: var(--rail-w);
+  --ih-sidebar-collapsed-width: var(--rail-w-collapsed);
+  --ih-layout-max-width: 100%;
+  --ih-table-row-height: var(--row-h);
+  --ih-table-row-height-compact: var(--control-h-lg);
+  --ih-table-header-padding-y: var(--space-xs);
+  --ih-table-cell-padding-y: 10px;
+  --ih-table-cell-padding-x: var(--space-sm);
+  --ih-table-cell-padding-y-compact: 6px;
+  --ih-menu-item-height: var(--control-h);
+
+  /* Motion */
+  --ih-duration-fast: var(--dur-micro);
+  --ih-duration-normal: var(--dur-short);
+  --ih-duration-slow: var(--dur-long);
+  --ih-duration-modal: var(--dur-long);
+  --ih-ease: var(--ease-out);
+  --ih-ease-in: var(--ease-in);
+  --ih-ease-out: var(--ease-out);
+  --ih-ease-in-out: var(--ease-in-out);
+  --ih-ease-spring: var(--ease-out);
+  --ih-ease-bounce: var(--ease-out);
+
+  /* Layers */
+  --ih-z-dropdown: var(--z-dropdown);
+  --ih-z-sticky: var(--z-sticky);
+  --ih-z-fixed: var(--z-sticky-nav);
+  --ih-z-modal-backdrop: var(--z-modal);
+  --ih-z-modal: var(--z-modal);
+  --ih-z-popover: var(--z-toast);
+  --ih-z-tooltip: var(--z-tooltip);
+
+  /* Legacy aliases */
+  --ih-bg: var(--ih-bg-page);
+  --ih-panel: var(--ih-bg-content);
+  --ih-sidebar: var(--ih-bg-sidebar);
+  --ih-sidebar-light: var(--ih-bg-sidebar-hover);
+  --ih-accent: var(--ih-primary);
+  --ih-text: var(--ih-text-primary);
+  --ih-radius: var(--ih-radius-md);
+
+  /* Interaction */
+  --ih-btn-active-scale: 1;
+  --ih-cursor-clickable: pointer;
+  --ih-opacity-disabled: 0.55;
+  --ih-transition-colors: color var(--ih-duration-normal) var(--ih-ease),
+    background-color var(--ih-duration-normal) var(--ih-ease),
+    border-color var(--ih-duration-normal) var(--ih-ease);
+
+  /* Gradients retired: surfaces are flat */
+  --ih-gradient-page: none;
+  --ih-gradient-card-top: none;
+  --ih-gradient-sidebar: none;
+
+  /* ---------- Element Plus bridge ---------- */
+  --el-color-primary: var(--color-accent);
+  --el-color-primary-light-3: color-mix(in oklab, var(--color-accent) 70%, var(--color-paper-2));
+  --el-color-primary-light-5: color-mix(in oklab, var(--color-accent) 50%, var(--color-paper-2));
+  --el-color-primary-light-7: color-mix(in oklab, var(--color-accent) 30%, var(--color-paper-2));
+  --el-color-primary-light-8: color-mix(in oklab, var(--color-accent) 20%, var(--color-paper-2));
+  --el-color-primary-light-9: var(--color-accent-soft);
+  --el-color-primary-dark-2: var(--color-accent-hover);
+
+  --el-color-success: var(--color-ok);
+  --el-color-success-light-3: color-mix(in oklab, var(--color-ok) 70%, var(--color-paper-2));
+  --el-color-success-light-5: color-mix(in oklab, var(--color-ok) 50%, var(--color-paper-2));
+  --el-color-success-light-7: color-mix(in oklab, var(--color-ok) 30%, var(--color-paper-2));
+  --el-color-success-light-8: color-mix(in oklab, var(--color-ok) 20%, var(--color-paper-2));
+  --el-color-success-light-9: var(--color-ok-soft);
+  --el-color-success-dark-2: color-mix(in oklab, var(--color-ok) 84%, var(--color-ink));
+
+  --el-color-warning: var(--color-accent);
+  --el-color-warning-light-3: var(--el-color-primary-light-3);
+  --el-color-warning-light-5: var(--el-color-primary-light-5);
+  --el-color-warning-light-7: var(--el-color-primary-light-7);
+  --el-color-warning-light-8: var(--el-color-primary-light-8);
+  --el-color-warning-light-9: var(--color-accent-soft);
+  --el-color-warning-dark-2: var(--color-accent-hover);
+
+  --el-color-danger: var(--color-bad);
+  --el-color-danger-light-3: color-mix(in oklab, var(--color-bad) 70%, var(--color-paper-2));
+  --el-color-danger-light-5: color-mix(in oklab, var(--color-bad) 50%, var(--color-paper-2));
+  --el-color-danger-light-7: color-mix(in oklab, var(--color-bad) 30%, var(--color-paper-2));
+  --el-color-danger-light-8: color-mix(in oklab, var(--color-bad) 20%, var(--color-paper-2));
+  --el-color-danger-light-9: var(--color-bad-soft);
+  --el-color-danger-dark-2: var(--color-bad-hover);
+
+  --el-color-error: var(--color-bad);
+  --el-color-error-light-3: var(--el-color-danger-light-3);
+  --el-color-error-light-5: var(--el-color-danger-light-5);
+  --el-color-error-light-7: var(--el-color-danger-light-7);
+  --el-color-error-light-8: var(--el-color-danger-light-8);
+  --el-color-error-light-9: var(--color-bad-soft);
+  --el-color-error-dark-2: var(--color-bad-hover);
+
+  --el-color-info: var(--color-cool);
+  --el-color-info-light-3: color-mix(in oklab, var(--color-cool) 70%, var(--color-paper-2));
+  --el-color-info-light-5: color-mix(in oklab, var(--color-cool) 50%, var(--color-paper-2));
+  --el-color-info-light-7: color-mix(in oklab, var(--color-cool) 30%, var(--color-paper-2));
+  --el-color-info-light-8: color-mix(in oklab, var(--color-cool) 20%, var(--color-paper-2));
+  --el-color-info-light-9: var(--color-cool-soft);
+  --el-color-info-dark-2: var(--color-cool-hover);
+
+  --el-color-white: var(--color-paper-2);
+  --el-color-black: var(--color-ink);
+
+  --el-bg-color: var(--color-paper-2);
+  --el-bg-color-page: var(--color-paper);
+  --el-bg-color-overlay: var(--color-paper-2);
+  --el-text-color-primary: var(--color-ink);
+  --el-text-color-regular: var(--color-ink-2);
+  --el-text-color-secondary: var(--color-muted);
+  --el-text-color-placeholder: var(--color-placeholder);
+  --el-text-color-disabled: var(--color-disabled);
+
+  --el-border-color: var(--color-rule-2);
+  --el-border-color-light: var(--color-rule);
+  --el-border-color-lighter: var(--color-rule);
+  --el-border-color-extra-light: var(--color-rule);
+  --el-border-color-dark: var(--color-rule-2);
+  --el-border-color-darker: var(--color-muted);
+  --el-border-color-hover: var(--color-rule-2);
+
+  --el-fill-color: var(--color-paper-3);
+  --el-fill-color-light: var(--color-paper-3);
+  --el-fill-color-lighter: var(--color-paper-2);
+  --el-fill-color-extra-light: var(--color-paper-2);
+  --el-fill-color-dark: var(--color-rule);
+  --el-fill-color-darker: var(--color-rule-2);
+  --el-fill-color-blank: var(--color-paper-2);
+
+  --el-mask-color: var(--color-backdrop);
+  --el-mask-color-extra-light: var(--color-wash);
+  --el-box-shadow: none;
+  --el-box-shadow-light: none;
+  --el-box-shadow-lighter: none;
+  --el-box-shadow-dark: none;
+
+  --el-disabled-bg-color: var(--color-paper-3);
+  --el-disabled-text-color: var(--color-disabled);
+  --el-disabled-border-color: var(--color-rule);
+
+  --el-font-family: var(--font-body);
+  --el-font-size-base: var(--text-sm);
+  --el-font-size-small: var(--text-xs);
+  --el-font-size-large: var(--text-md);
+  --el-font-size-extra-large: var(--text-lg);
+
+  --el-border-radius-base: var(--radius-field);
+  --el-border-radius-small: var(--radius-chip);
+  --el-border-radius-round: var(--radius-full);
+
+  --el-component-size: var(--control-h);
+  --el-component-size-small: var(--control-h-sm);
+  --el-component-size-large: var(--control-h-lg);
+
+  --el-transition-duration: var(--dur-short);
+  --el-transition-duration-fast: var(--dur-micro);
+  --el-transition-function-ease-in-out-bezier: var(--ease-in-out);
+  --el-transition-function-fast-bezier: var(--ease-out);
+
+  --el-overlay-color: var(--color-backdrop);
+  --el-overlay-color-light: var(--color-backdrop);
+  --el-overlay-color-lighter: var(--color-backdrop);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ih-duration-fast: 0ms;
+    --ih-duration-normal: 0ms;
+    --ih-duration-slow: 0ms;
+    --ih-duration-modal: 0ms;
+    --ih-ease: linear;
+    --ih-ease-in: linear;
+    --ih-ease-out: linear;
+    --ih-ease-in-out: linear;
+    --ih-ease-spring: linear;
+    --ih-ease-bounce: linear;
+    --dur-micro: 0ms;
+    --dur-short: 0ms;
+    --dur-long: 0ms;
+  }
+}

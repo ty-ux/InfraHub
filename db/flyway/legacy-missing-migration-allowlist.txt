@@ -1,0 +1,29 @@
+# Legacy Flyway migration identities used by the startup gate.
+# Format: version|type|script|checksum
+
+2|BASELINE|<< Flyway Baseline >>|null
+3|SQL|V3__add_sys_user_last_login_at.sql|-1345970570
+4|SQL|V4__release_runtime_and_ssh_config.sql|-148340315
+5|SQL|V5__approval_policy_and_request.sql|1797367394
+6|SQL|V6__approval_request_add_payload.sql|1050985058
+7|SQL|V7__approval_notification_log.sql|-1414577576
+8|SQL|V8__release_environment_policy_and_precheck_record.sql|284956777
+9|SQL|V9__release_canary_plan.sql|-86148812
+10|SQL|V10__release_canary_quality_gate.sql|-1312906713
+11|SQL|V11__release_canary_gate_evaluation.sql|904887455
+12|SQL|V12__monitor_notification_record.sql|-1838156808
+13|SQL|V13__release_executor_config.sql|1028237365
+14|SQL|V14__resource_governance_record.sql|-678757618
+15|SQL|V15__resource_capacity_policy.sql|919370281
+16|SQL|V16__release_resource_governance_suggestion.sql|-794257655
+17|SQL|V17__release_resource_governance_action_plan.sql|525215882
+18|SQL|V18__release_resource_governance_action_execution.sql|96634163
+19|SQL|V19__governance_record_enrichment.sql|-237750128
+20|SQL|V20__governance_action_execution_impact.sql|537700896
+21|SQL|V21__governance_alert_rule_and_record.sql|-868854063
+22|SQL|V22__release_governance_report.sql|-1927189773
+23|SQL|V23__governance_alert_handling.sql|309694048
+24|SQL|V24__governance_alert_escalation.sql|2147383370
+25|SQL|V25__governance_alert_assignment.sql|-1315827393
+26|SQL|V26__governance_alert_notification_record.sql|-1561050371
+27|SQL|V27__governance_alert_notification_followup.sql|2038157485

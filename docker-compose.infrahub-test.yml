@@ -1,0 +1,92 @@
+# InfraHub 测试环境 Compose —— 使用**现有外部 PostgreSQL**
+#
+# 与仓库根的 docker-compose.yml 是两个互不相干的编排，不要同时 -f：
+#   根编排：自带 postgres 容器、挂载 db/bootstrap 初始化脚本、并设置 SPRING_FLYWAY_ENABLED=false；
+#   本文件：不定义数据库、不挂载任何初始化 SQL、显式开启 Flyway。
+# Compose 的文件合并只发生在一次命令里传入多个 -f 时；只用本文件就不存在"继承关闭 Flyway"的路径。
+#
+# 用法（在仓库根执行；env 文件放在仓库之外）：
+#   docker compose -p infrahub-test -f docker-compose.infrahub-test.yml \
+#     --env-file ~/.config/infrahub/infrahub-test.env config --quiet          # 只校验，不打印任何值
+#   docker compose -p infrahub-test -f docker-compose.infrahub-test.yml \
+#     --env-file ~/.config/infrahub/infrahub-test.env config --no-interpolate # 看结构，变量保持 ${...} 原样
+#   docker compose -p infrahub-test -f docker-compose.infrahub-test.yml \
+#     --env-file ~/.config/infrahub/infrahub-test.env up -d --build
+#   docker compose -p infrahub-test -f docker-compose.infrahub-test.yml \
+#     --env-file ~/.config/infrahub/infrahub-test.env down                    # 停容器；不会动数据库
+#
+# 不要对含真实凭据的 env 文件执行不带参数的 `docker compose ... config`：那会把变量展开后的
+# 数据库口令与 JWT 密钥打印到终端/日志。需要确认渲染结果时用上面两种不带值的写法。
+#
+# 凭据只从 env 文件或现场环境注入：`${VAR:?}` 缺值时 Compose 直接报错退出，不会回落到任何默认值。
+# 本文件不含、也不应包含任何真实口令。
+#
+# 镜像内不含配置文件（application.yml 不进构建上下文，见 .dockerignore 与 infrahub-web/Dockerfile），
+# 因此下面 environment 段是容器运行期配置的**唯一来源**。
+
+name: infrahub-test
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: infrahub-web/Dockerfile
+    restart: unless-stopped
+    environment:
+      # 外部既有数据库：三项都必须由现场提供
+      SPRING_DATASOURCE_URL: ${INFRAHUB_DB_URL:?必须设置 INFRAHUB_DB_URL（jdbc:postgresql://主机:端口/库名）}
+      SPRING_DATASOURCE_USERNAME: ${INFRAHUB_DB_USERNAME:?必须设置 INFRAHUB_DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${INFRAHUB_DB_PASSWORD:?必须设置 INFRAHUB_DB_PASSWORD}
+      # 显式开启迁移闸门：既覆盖根编排的 false，也覆盖宿主机上可能残留的同名环境变量。
+      # 该值只决定"跑不跑 Flyway"，不改变 LegacyMissingMigrationGate 的启动前校验。
+      SPRING_FLYWAY_ENABLED: "true"
+      # 迁移策略：与 LegacyMissingMigrationGate 配套（见 db/flyway/README.md「缺失迁移例外与启动闸门」）。
+      # "*:missing" 只放过"已应用但本地解析不到脚本"的迁移，实际范围由 allowlist 与启动闸门收窄；
+      # 它不放宽校验和，也不允许跳过待执行迁移。
+      SPRING_FLYWAY_IGNORE_MIGRATION_PATTERNS: "*:missing"
+      # 表结构使用 identity 自增主键（见 db/flyway/sql），主键生成方式必须与之一致
+      MYBATIS_PLUS_GLOBAL_CONFIG_DB_CONFIG_ID_TYPE: "auto"
+      # 制品上传是 multipart 请求，框架默认上限(1MB)放不下制品
+      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: "200MB"
+      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: "210MB"
+      INFRAHUB_JWT_SECRET: ${INFRAHUB_JWT_SECRET:?必须设置 INFRAHUB_JWT_SECRET（至少 32 字节）}
+      INFRAHUB_JWT_ISSUER: ${INFRAHUB_JWT_ISSUER:-infrahub}
+      INFRAHUB_JWT_EXPIRE_SECONDS: ${INFRAHUB_JWT_EXPIRE_SECONDS:-7200}
+      # 与 SSH 单机实例互斥：容器内不启用任何自动采集，避免两个后端同时调度同一批目标
+      INFRAHUB_MONITOR_COLLECTION_ENABLED: "false"
+      INFRAHUB_MONITOR_COLLECTION_HOST_INSTANCE_ENABLED: "false"
+    ports:
+      # 宿主机 18080 避开 SSH 单机实例占用的 8080；容器内仍是 8080
+      - "${INFRAHUB_BACKEND_HOST_PORT:-18080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      # 首次启动会执行 Flyway 迁移闸门 + 迁移，给足时间；数据库不可达时健康检查会一直失败
+      start_period: 180s
+    networks:
+      - infrahub-test-net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: infrahub-console/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${INFRAHUB_FRONTEND_HOST_PORT:-18088}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - infrahub-test-net
+
+networks:
+  infrahub-test-net:
+    driver: bridge

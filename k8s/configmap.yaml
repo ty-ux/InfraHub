@@ -1,0 +1,16 @@
+# InfraHub backend non-sensitive configuration (V2 Stage X P2 deliverables).
+# SPRING_DATASOURCE_URL uses the placeholder host "postgres.example.internal" - the
+# deployer MUST replace it with the real database host. A Pod's own loopback address
+# must never be used as the database endpoint in this manifest.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: infrahub-backend-config
+  labels:
+    app: infrahub-backend
+data:
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres.example.internal:5432/infrahub
+  SPRING_FLYWAY_ENABLED: "false"
+  SERVER_PORT: "8080"
+  INFRAHUB_JWT_ISSUER: infrahub
+  INFRAHUB_JWT_EXPIRE_SECONDS: "7200"

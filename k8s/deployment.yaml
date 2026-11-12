@@ -1,0 +1,71 @@
+# InfraHub backend Deployment (V2 Stage X P2 deliverables)
+# Placeholder image: ghcr.io/example/infrahub-backend:replace-me MUST be replaced by the
+# deployer with the real image reference before applying to any real cluster.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infrahub-backend
+  labels:
+    app: infrahub-backend
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: infrahub-backend
+  template:
+    metadata:
+      labels:
+        app: infrahub-backend
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: infrahub-backend
+          image: ghcr.io/example/infrahub-backend:replace-me
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: infrahub-backend-config
+            - secretRef:
+                name: infrahub-backend-secret
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL

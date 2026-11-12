@@ -1,0 +1,8 @@
+/.gitattributes text eol=lf
+/docs/current-status.md text eol=lf
+/deploy/docker-compose.stagey-host-validation.yml text eol=lf
+/docs/release/v2-stage-y-local-kubernetes-integration-contract.md text eol=lf
+/docs/release/v2-stage-y-y2-runtime-validation.md text eol=lf
+/k8s/stagey/*.yaml text eol=lf
+/scripts/stagey/*.ps1 text eol=lf
+/docs/release/v2-stage-y-y3-static-preparation.md text eol=lf

@@ -1,0 +1,43 @@
+{
+  "name": "infrahub-console",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:api": "node ./scripts/run-api-e2e.cjs",
+    "test:e2e:headed": "playwright test --headed",
+    "test:smoke": "npx playwright test tests/e2e/smoke.spec.ts --workers=1",
+    "test:e2e:release-core": "npx playwright test tests/e2e/release-regression.spec.ts tests/e2e/release-v-stage.spec.ts tests/e2e/rollback-v-stage.spec.ts tests/e2e/deploy-config-check.spec.ts tests/e2e/rollback-candidate.spec.ts tests/e2e/release-stage-t.spec.ts --workers=1",
+    "test:e2e:governance": "npx playwright test tests/e2e/navigation.spec.ts tests/e2e/navigation-v-stage.spec.ts tests/e2e/pipeline-detail.spec.ts --workers=1",
+    "test:e2e:full": "npx playwright test --workers=1"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.8.4",
+    "dayjs": "^1.11.13",
+    "element-plus": "^2.9.8",
+    "pinia": "^2.3.1",
+    "vue": "^3.5.13",
+    "vue-i18n": "^9.14.4",
+    "vue-router": "^4.5.0",
+    "yaml": "^2.7.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^22.13.10",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/test-utils": "^2.4.6",
+    "happy-dom": "^17.4.4",
+    "playwright": "^1.59.1",
+    "sass": "^1.86.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.8",
+    "vue-tsc": "^2.2.8"
+  }
+}

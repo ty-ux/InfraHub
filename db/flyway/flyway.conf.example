@@ -1,0 +1,16 @@
+flyway.url=jdbc:postgresql://127.0.0.1:5432/infrahub
+flyway.user=postgres
+flyway.password=change_me
+flyway.locations=filesystem:./infrahub-web/src/main/resources/db/migration
+
+# Fresh database:
+# flyway.baselineOnMigrate=false
+
+# Existing database already initialized by 01-schema.sql + 02-init-data.sql:
+# 1. run baseline first
+# 2. set version to 2 because V1 and V2 are already represented in the live database
+# flyway.baselineVersion=2
+
+# Optional:
+# flyway.schemas=public
+# flyway.connectRetries=3

@@ -1,0 +1,247 @@
+/* Hallmark · shape: app screen · genre: modern-minimal · theme: Console (deal 2/3, seed infrastructure-operations-console-release-cfbd·a7b694ed·2026-11-02·r0) · redesign: full
+ * nav: kept routes inside a graphite instrument rail and a quiet command bar · signature: the release ledger · states: loading / empty / error / full on every data region · console: paper light, graphite dark, amber person, cool instrument
+ * axes: dark/grotesk-sans/chromatic-amber · posture: restrained · contrast: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R5 V4 · weakest: E, legacy view styles vary; I normalised the shared table, form and page layer first and left page styling thin */
+
+/* ---------------------------------------------------------------
+ * Console / paper (light, default)
+ * Neutral porcelain ground, a paper rail, amber for a person,
+ * cool blue for an instrument. Hairlines only; no shadows.
+ * --------------------------------------------------------------- */
+:root {
+  color-scheme: light;
+
+  /* Ground, ink, rules */
+  --color-paper: oklch(97.6% 0.0025 250);
+  --color-paper-2: oklch(99.3% 0.0015 250);
+  --color-paper-3: oklch(95.2% 0.003 250);
+  --color-ink: oklch(20% 0.008 250);
+  --color-ink-2: oklch(39% 0.009 250);
+  --color-muted: oklch(47% 0.01 250);
+  --color-placeholder: oklch(56% 0.008 250);
+  --color-disabled: oklch(66% 0.006 250);
+  --color-rule: oklch(89.5% 0.005 250);
+  --color-rule-2: oklch(79% 0.007 250);
+  --color-field-border: oklch(47% 0.01 250);
+
+  /* Amber: a person, the current thing, the one primary action */
+  --color-accent: oklch(53% 0.13 70);
+  --color-accent-hover: oklch(47% 0.13 70);
+  --color-accent-active: oklch(42% 0.12 70);
+  --color-accent-ink: oklch(99% 0.004 85);
+  --color-accent-soft: oklch(94.5% 0.03 75);
+  --color-accent-soft-2: oklch(90.5% 0.045 75);
+
+  /* Cool blue: an instrument, a version, a trace */
+  --color-cool: oklch(52% 0.14 250);
+  --color-cool-hover: oklch(46% 0.14 250);
+  --color-cool-ink: oklch(99% 0.004 85);
+  --color-cool-soft: oklch(93% 0.025 245);
+
+  /* Ok / bad: diffs and status only */
+  --color-ok: oklch(48% 0.13 150);
+  --color-ok-ink: oklch(99% 0.004 85);
+  --color-ok-soft: oklch(93% 0.03 150);
+  --color-bad: oklch(52% 0.17 25);
+  --color-bad-hover: oklch(46% 0.17 25);
+  --color-bad-ink: oklch(99% 0.004 85);
+  --color-bad-soft: oklch(94% 0.03 25);
+
+  /* State surfaces */
+  --color-row-hover: oklch(95.5% 0.004 250);
+  --color-selected: var(--color-accent-soft);
+  --color-focus: var(--color-accent);
+  --color-ring: color-mix(in oklab, var(--color-accent) 26%, transparent);
+  --color-backdrop: oklch(20% 0.008 250 / 0.42);
+  --color-wash: color-mix(in oklab, var(--color-paper-2) 82%, transparent);
+  --color-scrollbar: oklch(78% 0.006 250 / 0.55);
+  --color-scrollbar-hover: oklch(62% 0.008 250 / 0.7);
+
+  /* Rail: paper in light, graphite in dark */
+  --color-rail: oklch(96.8% 0.004 250);
+  --color-rail-2: oklch(93.5% 0.006 250);
+  --color-rail-3: oklch(99% 0.002 250);
+  --color-rail-ink: oklch(22% 0.01 250);
+  --color-rail-ink-2: oklch(38% 0.012 250);
+  --color-rail-muted: oklch(53% 0.012 250);
+  --color-rail-rule: oklch(88% 0.007 250);
+  --color-rail-accent: var(--color-accent);
+  --color-rail-accent-ink: var(--color-accent-ink);
+  --color-rail-accent-soft: var(--color-accent-soft);
+  --color-rail-hover: oklch(93.5% 0.008 250);
+
+  /* Brand panel: graphite in both colourways (login) */
+  --color-brand: oklch(20% 0.008 250);
+  --color-brand-2: oklch(25% 0.009 250);
+  --color-brand-ink: oklch(95% 0.005 250);
+  --color-brand-ink-2: oklch(80% 0.008 250);
+  --color-brand-muted: oklch(64% 0.01 250);
+  --color-brand-rule: oklch(31% 0.01 250);
+  --color-brand-accent: oklch(82% 0.15 80);
+  --color-brand-accent-ink: oklch(18% 0.04 75);
+
+  /* Faces */
+  --font-body: "Host Grotesk", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-body);
+  --font-outlier: "Atkinson Hyperlegible Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --display-weight: 500;
+  --tracking-display: -0.02em;
+
+  /* App type scale: 12 / 13 / 14 / 16 / 20 / 26 / 34 */
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-2xl: 26px;
+  --text-3xl: 34px;
+  --text-display-s: var(--text-xl);
+  --text-display: var(--text-2xl);
+  --text-section: var(--text-lg);
+  --text-title: var(--text-md);
+  --text-lead: var(--text-md);
+
+  /* Space */
+  --space-3xs: 2px;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+  /* Shape: panels 10, controls 6, chips 4 */
+  --radius-card: 10px;
+  --radius-panel: 10px;
+  --radius-pill: 6px;
+  --radius-field: 6px;
+  --radius-chip: 4px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-full: 9999px;
+  --rule-hair: 1px;
+  --shadow-card: none;
+  --shadow-overlay: none;
+
+  /* Float: only the login card leaves the paper */
+  --shadow-float: 0 28px 70px -36px oklch(20% 0.008 250 / 0.32),
+    0 10px 28px -18px oklch(20% 0.008 250 / 0.16);
+  --shadow-float-lift: 0 40px 96px -40px oklch(20% 0.008 250 / 0.4),
+    0 16px 40px -20px oklch(20% 0.008 250 / 0.2);
+
+  /* Layout */
+  --header-h: 56px;
+  --rail-w: 236px;
+  --rail-w-collapsed: 64px;
+  --content-max: 100%;
+  --gutter-page: 28px;
+  --row-h: 44px;
+  --control-h: 34px;
+  --control-h-sm: 28px;
+  --control-h-lg: 40px;
+
+  /* Motion: state changes only */
+  --dur-micro: 120ms;
+  --dur-short: 160ms;
+  --dur-long: 240ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Layers */
+  --z-base: 1;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-sticky-nav: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* Page rhythm (app screens, not marketing) */
+  --container: var(--content-max);
+  --gutter: var(--gutter-page);
+  --gap-columns: var(--space-md);
+  --section-gap-s: var(--space-lg);
+  --section-gap: var(--space-xl);
+  --section-gap-l: var(--space-2xl);
+}
+
+/* ---------------------------------------------------------------
+ * Console / graphite (dark)
+ * The same meanings on a graphite ground. Amber stays a person,
+ * cool stays an instrument; the rail sits one step deeper.
+ * --------------------------------------------------------------- */
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-paper: oklch(17% 0.008 250);
+  --color-paper-2: oklch(21% 0.009 250);
+  --color-paper-3: oklch(13.5% 0.007 250);
+  --color-ink: oklch(95% 0.005 250);
+  --color-ink-2: oklch(83% 0.008 250);
+  --color-muted: oklch(71% 0.01 250);
+  --color-placeholder: oklch(62% 0.01 250);
+  --color-disabled: oklch(45% 0.008 250);
+  --color-rule: oklch(31% 0.01 250);
+  --color-rule-2: oklch(42% 0.012 250);
+  --color-field-border: oklch(55% 0.012 250);
+
+  --color-accent: oklch(82% 0.15 80);
+  --color-accent-hover: oklch(87% 0.14 80);
+  --color-accent-active: oklch(76% 0.15 80);
+  --color-accent-ink: oklch(18% 0.04 75);
+  --color-accent-soft: oklch(29% 0.05 80);
+  --color-accent-soft-2: oklch(34% 0.06 80);
+
+  --color-cool: oklch(77% 0.12 245);
+  --color-cool-hover: oklch(83% 0.11 245);
+  --color-cool-ink: oklch(16% 0.03 245);
+  --color-cool-soft: oklch(29% 0.05 245);
+
+  --color-ok: oklch(76% 0.15 150);
+  --color-ok-ink: oklch(15% 0.03 150);
+  --color-ok-soft: oklch(24.5% 0.03 150);
+  --color-bad: oklch(70% 0.17 25);
+  --color-bad-hover: oklch(76% 0.16 25);
+  --color-bad-ink: oklch(15% 0.03 25);
+  --color-bad-soft: oklch(24.5% 0.035 25);
+
+  --color-row-hover: oklch(23% 0.009 250);
+  --color-selected: var(--color-accent-soft);
+  --color-focus: var(--color-accent);
+  --color-ring: color-mix(in oklab, var(--color-accent) 24%, transparent);
+  --color-backdrop: oklch(8% 0.006 250 / 0.72);
+  --color-wash: color-mix(in oklab, var(--color-paper-2) 82%, transparent);
+  --color-scrollbar: oklch(42% 0.012 250 / 0.7);
+  --color-scrollbar-hover: oklch(56% 0.012 250 / 0.85);
+
+  --color-rail: oklch(13.5% 0.007 250);
+  --color-rail-2: oklch(18.5% 0.008 250);
+  --color-rail-3: oklch(10.5% 0.006 250);
+  --color-rail-ink: oklch(95% 0.005 250);
+  --color-rail-ink-2: oklch(80% 0.008 250);
+  --color-rail-muted: oklch(64% 0.01 250);
+  --color-rail-rule: oklch(27% 0.01 250);
+  --color-rail-accent: oklch(82% 0.15 80);
+  --color-rail-accent-ink: oklch(18% 0.04 75);
+  --color-rail-accent-soft: oklch(29% 0.05 80);
+  --color-rail-hover: oklch(18.5% 0.008 250);
+
+  --color-brand: oklch(13.5% 0.007 250);
+  --color-brand-2: oklch(18.5% 0.008 250);
+  --color-brand-rule: oklch(27% 0.01 250);
+
+  --shadow-float: 0 28px 70px -36px oklch(0% 0 0 / 0.75),
+    0 10px 28px -18px oklch(0% 0 0 / 0.45);
+  --shadow-float-lift: 0 40px 96px -40px oklch(0% 0 0 / 0.85),
+    0 16px 40px -20px oklch(0% 0 0 / 0.55);
+}
+
+/* Hallmark · stamped 2026-11-02 · scope app · modes light + dark · fonts Host Grotesk / Atkinson Hyperlegible Mono */
