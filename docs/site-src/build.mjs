@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { guide } from './guide.mjs';
 
@@ -9,6 +10,17 @@ const escape = (text) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;')
 const url = (root, ...parts) => root + parts.map(({ slug }) => slug + '/').join('') + 'index.html';
 const active = (isCurrent) => isCurrent ? ' aria-current="page"' : '';
 
+async function versionedAsset(name) {
+  const content = await readFile(new URL(name, output), 'utf8');
+  const version = createHash('sha256').update(content.replaceAll('\r\n', '\n')).digest('hex').slice(0, 12);
+  return `${name}?v=${version}`;
+}
+
+const [stylesheet, navigation] = await Promise.all([
+  versionedAsset('site.css'),
+  versionedAsset('guide-nav.js'),
+]);
+
 function layout({ title, description, root, content, home = false, group, page }) {
   const homeUrl = url(root);
   return `<!doctype html>
@@ -19,8 +31,8 @@ function layout({ title, description, root, content, home = false, group, page }
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="${escape(description)}">
   <title>${escape(title)}</title>
-  <link rel="stylesheet" href="${root}site.css">
-  <script src="${root}guide-nav.js" defer></script>
+  <link rel="stylesheet" href="${root}${stylesheet}">
+  <script src="${root}${navigation}" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">跳到正文</a>
