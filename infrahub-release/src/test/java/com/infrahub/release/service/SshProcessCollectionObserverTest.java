@@ -182,7 +182,7 @@ class SshProcessCollectionObserverTest {
         when(sshExecutorService.execute(any())).thenReturn(
                 SshExecutionResult.success(REACHABLE_MARKER + "true\n", "", T0, T0));
 
-        observer.observe(hostRef(1L, 5L, 2222));
+        observer.observe(hostRef(1L, host.getIp(), 5L, 2222));
 
         ArgumentCaptor<SshExecutionRequest> captor = ArgumentCaptor.forClass(SshExecutionRequest.class);
         verify(sshExecutorService).execute(captor.capture());
