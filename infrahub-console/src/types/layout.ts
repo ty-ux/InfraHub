@@ -1,10 +1,16 @@
 import type { Component } from 'vue';
+import type { RouteMeta } from 'vue-router';
+import type { MenuGroup } from '@/router/navigation';
 
-export type MenuGroup = 'workspace' | 'resource' | 'config' | 'release' | 'pipeline' | 'system';
+declare module 'vue-router' {
+  interface RouteMeta {
+    group?: MenuGroup;
+    activeMenuPath?: string;
+  }
+}
 
-export interface AppRouteMeta {
+export interface AppRouteMeta extends RouteMeta {
   title: string;
-  group?: MenuGroup;
   order?: number;
   authorities?: string[];
   hidden?: boolean;

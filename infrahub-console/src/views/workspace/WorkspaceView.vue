@@ -46,7 +46,7 @@ const quickLinks = computed(() => {
   const items = [
     { path: '/resource/apps', title: t('workspace.quick.appsTitle'), desc: t('workspace.quick.appsDesc'), auth: ['APP_VIEW', 'SYSTEM_ADMIN'] },
     { path: '/config/env-configs', title: t('workspace.quick.configsTitle'), desc: t('workspace.quick.configsDesc'), auth: ['SYSTEM_ADMIN'] },
-    { path: '/release/orders', title: t('workspace.quick.releaseTitle'), desc: t('workspace.quick.releaseDesc'), auth: ['RELEASE_EXECUTE', 'SYSTEM_ADMIN'] },
+    { path: '/pipeline/defs', title: t('workspace.quick.pipelineTitle'), desc: t('workspace.quick.pipelineDesc'), auth: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'] },
     { path: '/pipeline/runs', title: t('workspace.quick.runsTitle'), desc: t('workspace.quick.runsDesc'), auth: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'] },
   ];
   return items.filter((item) => authStore.canAccess(item.auth));

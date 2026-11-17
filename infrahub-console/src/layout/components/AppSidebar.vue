@@ -7,7 +7,7 @@
         :key="item.path"
         :to="item.path"
         class="menu-item"
-        :class="{ active: route.path === item.path }"
+        :class="{ active: activeMenuPath === item.path }"
         :aria-label="t(item.meta.title)"
         :title="t(item.meta.title)"
       >
@@ -22,6 +22,7 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { menuGroupTitles } from '@/router/navigation';
 import { appRoutes } from '@/router/routes';
 import { useAuthStore } from '@/store/auth';
 
@@ -29,18 +30,10 @@ const route = useRoute();
 const authStore = useAuthStore();
 const { t } = useI18n();
 
-const groupTitles = {
-  workspace: 'sidebar.workspace',
-  resource: 'sidebar.resource',
-  config: 'sidebar.config',
-  release: 'sidebar.release',
-  pipeline: 'sidebar.pipeline',
-  monitor: 'sidebar.monitor',
-  system: 'sidebar.system',
-} as const;
+const activeMenuPath = computed(() => route.meta.activeMenuPath ?? route.path);
 
 const menuGroups = computed(() =>
-  Object.entries(groupTitles)
+  Object.entries(menuGroupTitles)
     .map(([key, title]) => ({
       key,
       titleKey: title,

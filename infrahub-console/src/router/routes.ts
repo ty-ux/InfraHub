@@ -85,12 +85,12 @@ export const appRoutes: AppRouteRecord[] = [
   {
     path: '/resource/governance',
     component: () => import('@/views/resource/ResourceGovernanceView.vue'),
-    meta: { title: 'routes.resourceGovernance', group: 'resource', order: 16, icon: Management, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
+    meta: { title: 'routes.resourceGovernance', group: 'governance', order: 10, icon: Management, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
   },
   {
     path: '/resource/capacity-policies',
     component: () => import('@/views/resource/CapacityPoliciesView.vue'),
-    meta: { title: 'routes.capacityPolicies', group: 'resource', order: 17, icon: TrendCharts, authorities: ['SYSTEM_ADMIN'] },
+    meta: { title: 'routes.capacityPolicies', group: 'governance', order: 20, icon: TrendCharts, authorities: ['SYSTEM_ADMIN'] },
   },
   {
     path: '/config/groups',
@@ -110,82 +110,82 @@ export const appRoutes: AppRouteRecord[] = [
   {
     path: '/release/orders',
     component: () => import('@/views/release/ReleaseOrdersView.vue'),
-    meta: { title: 'routes.releaseOrders', group: 'release', order: 30, icon: DocumentChecked, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'], pageKey: 'releaseOrders', hidden: true },
+    meta: { title: 'routes.releaseOrders', group: 'delivery', icon: DocumentChecked, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'], pageKey: 'releaseOrders', hidden: true },
   },
   {
     path: '/release/rollbacks',
     component: () => import('@/views/release/RollbackOrdersView.vue'),
-    meta: { title: 'pipelineDelivery.rollbackHistory', group: 'release', order: 31, icon: RefreshLeft, authorities: ['ROLLBACK_VIEW', 'SYSTEM_ADMIN'], pageKey: 'releaseRollbacks', hidden: true },
+    meta: { title: 'pipelineDelivery.rollbackHistory', group: 'delivery', activeMenuPath: '/release/application-rollback', icon: RefreshLeft, authorities: ['ROLLBACK_VIEW', 'SYSTEM_ADMIN'], pageKey: 'releaseRollbacks', hidden: true },
   },
   {
     path: '/release/application-rollback',
     component: () => import('@/views/release/ApplicationRollbackView.vue'),
-    meta: { title: 'pipelineDelivery.rollbackTitle', group: 'release', order: 31, icon: RefreshLeft, authorities: ['ROLLBACK_VIEW', 'ROLLBACK_EXECUTE', 'SYSTEM_ADMIN'] },
+    meta: { title: 'pipelineDelivery.rollbackTitle', group: 'delivery', order: 60, icon: RefreshLeft, authorities: ['ROLLBACK_VIEW', 'ROLLBACK_EXECUTE', 'SYSTEM_ADMIN'] },
   },
   {
     path: '/release/versions',
     component: () => import('@/views/release/ReleaseVersionsView.vue'),
-    meta: { title: 'routes.releaseVersions', group: 'release', order: 32, icon: Tickets, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'], pageKey: 'releaseVersions' },
+    meta: { title: 'routes.releaseVersions', group: 'delivery', order: 30, icon: Tickets, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'], pageKey: 'releaseVersions' },
   },
   {
     path: '/release/artifacts',
     component: () => import('@/views/release/ReleaseArtifactsView.vue'),
-    meta: { title: 'routes.releaseArtifacts', group: 'release', order: 33, icon: Box, authorities: ['SYSTEM_ADMIN'], pageKey: 'releaseArtifacts' },
+    meta: { title: 'routes.releaseArtifacts', group: 'delivery', order: 40, icon: Box, authorities: ['SYSTEM_ADMIN'], pageKey: 'releaseArtifacts' },
   },
   {
     path: '/release/current-versions',
     component: () => import('@/views/release/CurrentVersionsView.vue'),
-    meta: { title: 'routes.currentVersions', group: 'release', order: 34, icon: Finished, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'], pageKey: 'currentVersions' },
+    meta: { title: 'routes.currentVersions', group: 'delivery', order: 50, icon: Finished, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'], pageKey: 'currentVersions' },
   },
   {
     path: '/release/unknown-executions',
     component: () => import('@/views/release/UnknownExecutionsView.vue'),
-    meta: { title: 'routes.unknownExecutions', group: 'release', order: 35, icon: Guide, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'], pageKey: 'unknownExecutions' },
+    meta: { title: 'routes.unknownExecutions', group: 'governance', order: 50, icon: Guide, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'], pageKey: 'unknownExecutions' },
   },
   {
     path: '/pipeline/defs',
     component: () => import('@/views/pipeline/PipelineDefsView.vue'),
-    meta: { title: 'routes.pipelineDefs', group: 'pipeline', order: 40, icon: Connection, authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], pageKey: 'pipelineDefs' },
+    meta: { title: 'routes.pipelineDefs', group: 'delivery', order: 10, icon: Connection, authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], pageKey: 'pipelineDefs' },
   },
   {
     path: '/pipeline/defs/:id',
     component: () => import('@/views/pipeline/PipelineDetailView.vue'),
-    meta: { title: 'routes.pipelineDetail', authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], hidden: true },
+    meta: { title: 'routes.pipelineDetail', group: 'delivery', activeMenuPath: '/pipeline/defs', authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], hidden: true },
   },
   {
     path: '/pipeline/runs',
     component: () => import('@/views/pipeline/PipelineRunsView.vue'),
-    meta: { title: 'routes.pipelineRuns', group: 'pipeline', order: 41, icon: DataLine, authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'] },
+    meta: { title: 'routes.pipelineRuns', group: 'delivery', order: 20, icon: DataLine, authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'] },
   },
   {
     path: '/pipeline/runs/:id/steps',
     component: () => import('@/views/pipeline/RunStepsView.vue'),
-    meta: { title: 'routes.stepRuns', authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], hidden: true },
+    meta: { title: 'routes.stepRuns', group: 'delivery', activeMenuPath: '/pipeline/runs', authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], hidden: true },
   },
   {
     path: '/monitor/targets',
     component: () => import('@/views/monitor/MonitorTargetsView.vue'),
-    meta: { title: 'routes.monitorTargets', group: 'monitor', order: 60, icon: Aim, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
+    meta: { title: 'routes.monitorTargets', group: 'monitor', order: 10, icon: Aim, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
   },
   {
     path: '/monitor/snapshots',
     component: () => import('@/views/monitor/MonitorSnapshotsView.vue'),
-    meta: { title: 'routes.monitorSnapshots', group: 'monitor', order: 61, icon: Camera, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
+    meta: { title: 'routes.monitorSnapshots', group: 'monitor', order: 30, icon: Camera, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
   },
   {
     path: '/monitor/alert-rules',
     component: () => import('@/views/monitor/MonitorAlertRulesView.vue'),
-    meta: { title: 'routes.monitorAlertRules', group: 'monitor', order: 62, icon: Bell, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
+    meta: { title: 'routes.monitorAlertRules', group: 'monitor', order: 40, icon: Bell, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
   },
   {
     path: '/monitor/alert-events',
     component: () => import('@/views/monitor/MonitorAlertEventsView.vue'),
-    meta: { title: 'routes.monitorAlertEvents', group: 'monitor', order: 63, icon: Notification, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
+    meta: { title: 'routes.monitorAlertEvents', group: 'monitor', order: 50, icon: Notification, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
   },
   {
     path: '/monitor/health-checks',
     component: () => import('@/views/monitor/MonitorHealthChecksView.vue'),
-    meta: { title: 'routes.monitorHealthChecks', group: 'monitor', order: 64, icon: FirstAidKit, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
+    meta: { title: 'routes.monitorHealthChecks', group: 'monitor', order: 20, icon: FirstAidKit, authorities: ['RELEASE_VIEW', 'SYSTEM_ADMIN'] },
   },
   {
     path: '/system/users',
@@ -210,7 +210,7 @@ export const appRoutes: AppRouteRecord[] = [
   {
     path: '/system/release-diagnostics',
     component: () => import('@/views/system/ReleaseDiagnosticsView.vue'),
-    meta: { title: 'routes.releaseDiagnostics', group: 'system', order: 54, icon: DataAnalysis, authorities: ['SYSTEM_ADMIN'] },
+    meta: { title: 'routes.releaseDiagnostics', group: 'governance', order: 70, icon: DataAnalysis, authorities: ['SYSTEM_ADMIN'] },
   },
   {
     path: '/system/audit-logs',
@@ -220,22 +220,22 @@ export const appRoutes: AppRouteRecord[] = [
   {
     path: '/system/approvals',
     component: () => import('@/views/system/ApprovalCenterView.vue'),
-    meta: { title: 'routes.approvals', group: 'system', order: 56, icon: CircleCheck, authorities: ['SYSTEM_ADMIN', 'APPROVAL_VIEW'] },
+    meta: { title: 'routes.approvals', group: 'governance', order: 40, icon: CircleCheck, authorities: ['SYSTEM_ADMIN', 'APPROVAL_VIEW'] },
   },
   {
     path: '/system/governance-chain',
     component: () => import('@/views/system/GovernanceChainView.vue'),
-    meta: { title: 'routes.governanceChain', group: 'system', order: 57, icon: Share, authorities: ['SYSTEM_ADMIN'] },
+    meta: { title: 'routes.governanceChain', group: 'governance', order: 60, icon: Share, authorities: ['SYSTEM_ADMIN'] },
   },
   {
     path: '/system/release-environment-policies',
     component: () => import('@/views/system/ReleaseEnvironmentPoliciesView.vue'),
-    meta: { title: 'routes.releaseEnvironmentPolicies', group: 'system', order: 58, icon: Guide, authorities: ['SYSTEM_ADMIN'] },
+    meta: { title: 'routes.releaseEnvironmentPolicies', group: 'governance', order: 30, icon: Guide, authorities: ['SYSTEM_ADMIN'] },
   },
   {
     path: '/system/executor-configs',
     component: () => import('@/views/system/ReleaseExecutorConfigsView.vue'),
-    meta: { title: 'routes.executorConfigs', group: 'system', order: 59, icon: Tools, authorities: ['SYSTEM_ADMIN'] },
+    meta: { title: 'routes.executorConfigs', group: 'config', order: 23, icon: Tools, authorities: ['SYSTEM_ADMIN'] },
   },
 ];
 

@@ -49,6 +49,27 @@ test.beforeEach(async ({ page }) => {
   await loginAsAdmin(page);
 });
 
+test('sidebar follows the deployment workflow and highlights execution details', async ({ page }) => {
+  const sidebar = page.locator('aside.layout-sidebar');
+  await expect(sidebar.locator('.group-title')).toHaveText([
+    '工作台', '应用与资源', '部署配置', '发布与回滚', '监控中心', '治理与审批', '系统管理',
+  ]);
+
+  const delivery = sidebar.locator('.group').filter({
+    has: page.locator('.group-title', { hasText: '发布与回滚' }),
+  });
+  await expect(delivery.getByRole('link')).toHaveText([
+    '流水线定义', '执行记录', '版本管理', '制品管理', '当前版本', '应用回滚',
+  ]);
+  await expect(sidebarLink(page, '发布单')).toHaveCount(0);
+  await expect(sidebarLink(page, '回滚单')).toHaveCount(0);
+
+  await expect(page.locator('.route-strip a[href="/pipeline/defs"]')).toBeVisible();
+  await page.goto('/pipeline/runs/297/steps');
+  await expect(sidebarLink(page, '执行记录')).toHaveClass(/\bactive\b/);
+  await expect(page.locator('.header-group')).toHaveText('发布与回滚');
+});
+
 test('core management pages can be opened', async ({ page }) => {
   await sidebarLink(page, '应用管理').click();
   await expect(page.getByRole('heading', { name: '应用管理' })).toBeVisible();
@@ -67,11 +88,8 @@ test('core management pages can be opened', async ({ page }) => {
   await expect(page.getByRole('button', { name: '批量导入' })).toBeVisible();
   await expect(page.getByRole('button', { name: '从模板生成' })).toBeVisible();
 
-  await sidebarLink(page, '发布单').click();
-  await expect(page.getByRole('heading', { name: '发布单' })).toBeVisible();
-
-  await sidebarLink(page, '回滚单').click();
-  await expect(page.getByRole('heading', { name: '回滚单' })).toBeVisible();
+  await sidebarLink(page, '应用回滚').click();
+  await expect(page.getByRole('heading', { name: '应用回滚' })).toBeVisible();
 
   await sidebarLink(page, '版本管理').click();
   await expect(page.getByRole('heading', { name: '版本管理' })).toBeVisible();

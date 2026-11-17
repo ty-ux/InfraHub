@@ -48,6 +48,7 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/store/auth';
 import { useTheme } from '@/composables/useTheme';
 import { setLocale as applyLocale } from '@/i18n';
+import { menuGroupTitles } from '@/router/navigation';
 
 const route = useRoute();
 const router = useRouter();
@@ -56,25 +57,14 @@ const { t, locale } = useI18n();
 const currentLocale = locale;
 const { theme, toggleTheme } = useTheme();
 
-const groupTitles: Record<string, string> = {
-  workspace: 'sidebar.workspace',
-  resource: 'sidebar.resource',
-  config: 'sidebar.config',
-  release: 'sidebar.release',
-  pipeline: 'sidebar.pipeline',
-  monitor: 'sidebar.monitor',
-  system: 'sidebar.system',
-};
-
 const pageTitle = computed(() => {
   const title = route.meta.title;
   return title ? t(String(title)) : t('header.title');
 });
 
 const groupTitle = computed(() => {
-  const key = String(route.meta.group || '');
-  const titleKey = groupTitles[key];
-  return titleKey ? t(titleKey) : '';
+  const group = route.meta.group;
+  return group ? t(menuGroupTitles[group]) : '';
 });
 
 function handleLogout() {
