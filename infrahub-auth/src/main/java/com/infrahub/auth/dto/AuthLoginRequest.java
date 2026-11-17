@@ -8,7 +8,7 @@ import lombok.Data;
 public class AuthLoginRequest {
 
     @NotBlank
-    @Size(max = 64)
+    @Size(max = 254)
     private String username;
 
     @NotBlank

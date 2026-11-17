@@ -18,6 +18,10 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
         return lambdaQuery().eq(SysUser::getUsername, username).one();
     }
 
+    public SysUser getByVerifiedEmail(String email) {
+        return lambdaQuery().eq(SysUser::getEmail, email).isNotNull(SysUser::getEmailVerifiedAt).one();
+    }
+
     public UserContext getActiveContext(SysUser user) {
         Set<String> global = new HashSet<>();
         Set<String> authorities = new HashSet<>();

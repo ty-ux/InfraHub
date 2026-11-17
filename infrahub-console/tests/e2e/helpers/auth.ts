@@ -43,16 +43,16 @@ export async function loginAsAdmin(page: Page) {
   });
 
   await page.goto('/login');
-  await expect(page.getByRole('heading', { name: '登录' })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole('heading', { name: '进入控制台' })).toBeVisible({ timeout: 10000 });
 
-  const username = page.locator('input').nth(0);
-  const password = page.locator('input').nth(1);
+  const username = page.getByLabel('用户名或邮箱');
+  const password = page.getByLabel('密码', { exact: true });
 
   await username.fill('admin');
   await password.fill('admin123');
   await page.getByRole('button', { name: '登录' }).click();
 
-  // Explicit timeout for URL change and console text - login can be slow under load
+  // Login can be slow under load.
   await expect(page).toHaveURL(/\/workspace/, { timeout: 30000 });
-  await expect(page.getByText('InfraHub 控制台')).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('aside.layout-sidebar').getByText('InfraHub', { exact: true })).toBeVisible({ timeout: 10000 });
 }

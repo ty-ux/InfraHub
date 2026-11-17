@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,24 +46,35 @@ public class SysAccessService {
 
     @Transactional
     public Long createUser(NewUser request) {
-        LocalPasswordPolicy.validate(request.initialPassword());
-        if (!request.roleIds().isEmpty() && roles.listByIds(request.roleIds()).stream()
-                .filter(role -> "ENABLED".equals(role.getStatus())).count() != request.roleIds().size()) {
+        return createLocalUser(request.username(), request.displayName(), request.initialPassword(), request.roleIds(), null);
+    }
+
+    public void validateEnabledRoles(Set<Long> roleIds) {
+        if (!roleIds.isEmpty() && roles.listByIds(roleIds).stream()
+                .filter(role -> "ENABLED".equals(role.getStatus())).count() != roleIds.size()) {
             throw invalid("所选角色不存在或未启用");
         }
+    }
+
+    @Transactional
+    public Long createLocalUser(String username, String displayName, String password, Set<Long> roleIds, String verifiedEmail) {
+        LocalPasswordPolicy.validate(password);
+        validateEnabledRoles(roleIds);
         SysUser user = new SysUser();
-        user.setUsername(request.username());
-        user.setDisplayName(request.displayName().trim());
+        user.setUsername(username);
+        user.setDisplayName(displayName.trim());
         user.setAuthType("LOCAL");
-        user.setPasswordHash(passwordEncoder.encode(request.initialPassword()));
+        user.setPasswordHash(passwordEncoder.encode(password));
         user.setStatus("ENABLED");
-        user.setMustChangePassword(true);
+        user.setMustChangePassword(verifiedEmail == null);
+        user.setEmail(verifiedEmail);
+        if (verifiedEmail != null) user.setEmailVerifiedAt(OffsetDateTime.now());
         try {
             users.save(user);
         } catch (DuplicateKeyException exception) {
-            throw invalid("用户名已存在");
+            throw invalid(verifiedEmail == null ? "用户名已存在" : "用户名或邮箱已被使用");
         }
-        request.roleIds().forEach(roleId -> mapper.addUserRole(user.getId(), roleId));
+        roleIds.forEach(roleId -> mapper.addUserRole(user.getId(), roleId));
         return user.getId();
     }
 

@@ -2,7 +2,10 @@
   <CrudPage ref="table" :key="pageKey" :config="config">
     <template #toolbar-extra>
       <el-button v-if="pageKey === 'systemRoles'" type="primary" @click="createVisible = true">{{ t('access.createRole') }}</el-button>
-      <el-button v-else type="primary" @click="newUserVisible = true">{{ t('auth.createUser') }}</el-button>
+      <template v-else>
+        <el-button @click="inviteVisible = true">{{ t('accountEmail.inviteUser') }}</el-button>
+        <el-button type="primary" @click="newUserVisible = true">{{ t('auth.createUser') }}</el-button>
+      </template>
     </template>
     <template #row-actions="{ row }">
       <el-button link type="primary" @click="openEditor(row)">
@@ -83,6 +86,7 @@
     </template>
   </el-dialog>
   <CreateUserDialog v-if="newUserVisible" v-model="newUserVisible" @created="refreshUsers" />
+  <InviteUserDialog v-if="inviteVisible" v-model="inviteVisible" />
 </template>
 
 <script setup lang="ts">
@@ -96,6 +100,7 @@ import { useAuthStore } from '@/store/auth';
 import { getPageConfig } from '@/views/configs/page-configs';
 import { menuRoutes } from '@/router/routes';
 import CreateUserDialog from './CreateUserDialog.vue';
+import InviteUserDialog from './InviteUserDialog.vue';
 
 const route = useRoute();
 const { t } = useI18n();
@@ -116,6 +121,7 @@ const userRoleIds = ref<number[]>([]);
 const activeTab = ref('pages');
 const createVisible = ref(false);
 const newUserVisible = ref(false);
+const inviteVisible = ref(false);
 const creating = ref(false);
 const newRoleCode = ref('');
 const newRoleName = ref('');

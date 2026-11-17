@@ -53,6 +53,10 @@ npm run dev
 
 首次使用种子管理员时，在后端环境中设置 `INFRAHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD`，再用用户名 `admin` 和该密码登录。初始密码至少 15 个字符，UTF-8 编码最多 72 字节。首次登录后需修改密码，改密后即可移除该环境变量。已有正常密码的管理员可直接登录。管理员可在「系统管理 → 用户管理」创建用户和分配角色。
 
+邮箱功能使用后端 SMTP 配置。在仓库外设置 `spring.mail.host`、`spring.mail.port`、`infrahub.auth.mail.from`，以及邮件服务要求的认证和 TLS 参数。将 `spring.mail.properties.mail.smtp.connectiontimeout`、`timeout`、`writetimeout`（同一前缀）设为有限的毫秒值。发送邀请还需设置 `infrahub.auth.mail.console-url` 为收件人可访问的 HTTPS 控制台地址，本机测试可使用 `http://localhost:5173`。
+
+完成配置后，用户可从右上角「邮箱设置」验证并绑定邮箱，随后使用邮箱和密码或邮箱验证码登录。管理员在「系统管理 → 用户管理」发送注册邀请并预分配角色，收件人通过邮件链接设置账号和密码。
+
 ## 文档
 
 - [Docker Compose 测试部署](docker-compose.infrahub-test.yml)

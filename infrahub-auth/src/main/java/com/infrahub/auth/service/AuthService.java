@@ -40,7 +40,11 @@ public class AuthService {
     }
 
     public AuthTokenResponse login(AuthLoginRequest request) {
-        SysUser sysUser = sysUserService.getByUsername(request.getUsername());
+        String identifier = request.getUsername();
+        SysUser sysUser = sysUserService.getByUsername(identifier);
+        if (sysUser == null && identifier.contains("@")) {
+            sysUser = sysUserService.getByVerifiedEmail(EmailAccountService.normalize(identifier));
+        }
         boolean local = sysUser != null && "ENABLED".equals(sysUser.getStatus()) && "LOCAL".equalsIgnoreCase(sysUser.getAuthType());
         String stored = local ? sysUser.getPasswordHash() : null;
         String password = request.getPassword();
@@ -55,26 +59,20 @@ public class AuthService {
                 throw new BizException(ErrorCode.PASSWORD_MISMATCH);
             }
         }
-        boolean updated = sysUserService.lambdaUpdate().eq(SysUser::getId, sysUser.getId())
+        return completeLogin(sysUser);
+    }
+
+    AuthTokenResponse completeLogin(SysUser user) {
+        boolean updated = sysUserService.lambdaUpdate().eq(SysUser::getId, user.getId())
                 .eq(SysUser::getStatus, "ENABLED")
-                .eq(SysUser::getCredentialVersion, sysUser.getCredentialVersion())
+                .eq(SysUser::getCredentialVersion, user.getCredentialVersion())
                 .set(SysUser::getLastLoginAt, OffsetDateTime.now()).update();
         if (!updated) throw new BizException(ErrorCode.PASSWORD_MISMATCH);
-        return issueToken(sysUser);
+        return issueToken(user);
     }
 
     public AuthTokenResponse changePassword(ChangePasswordRequest request) {
-        UserContext context = UserContextHolder.get();
-        SysUser user = sysUserService.getById(context.getUserId());
-        if (user == null || !"ENABLED".equals(user.getStatus()) || user.getCredentialVersion() != context.getCredentialVersion()) {
-            throw new BizException(ErrorCode.UNAUTHORIZED);
-        }
-        if (!"LOCAL".equalsIgnoreCase(user.getAuthType())) {
-            throw new BizException(ErrorCode.FORBIDDEN, "该账号未启用本地密码");
-        }
-        if (!matchesPassword(request.currentPassword(), user.getPasswordHash())) {
-            throw new BizException(ErrorCode.PASSWORD_MISMATCH, "当前密码不正确");
-        }
+        SysUser user = verifyCurrentPassword(request.currentPassword());
         LocalPasswordPolicy.validate(request.newPassword());
         if (request.currentPassword().equals(request.newPassword())) {
             throw new BizException(ErrorCode.VALIDATION_ERROR, "新密码必须与当前密码不同");
@@ -83,6 +81,22 @@ public class AuthService {
             throw new BizException(ErrorCode.UNAUTHORIZED);
         }
         return issueToken(user);
+    }
+
+    SysUser verifyCurrentPassword(String password) {
+        UserContext context = UserContextHolder.get();
+        if (context == null) throw new BizException(ErrorCode.UNAUTHORIZED);
+        SysUser user = sysUserService.getById(context.getUserId());
+        if (user == null || !"ENABLED".equals(user.getStatus()) || user.getCredentialVersion() != context.getCredentialVersion()) {
+            throw new BizException(ErrorCode.UNAUTHORIZED);
+        }
+        if (!"LOCAL".equalsIgnoreCase(user.getAuthType())) {
+            throw new BizException(ErrorCode.FORBIDDEN, "该账号未启用本地密码");
+        }
+        if (!matchesPassword(password, user.getPasswordHash())) {
+            throw new BizException(ErrorCode.PASSWORD_MISMATCH, "当前密码不正确");
+        }
+        return user;
     }
 
     private boolean replacePassword(SysUser user, String password, boolean mustChange) {
@@ -102,7 +116,7 @@ public class AuthService {
         return updated;
     }
 
-    private AuthTokenResponse issueToken(SysUser user) {
+    AuthTokenResponse issueToken(SysUser user) {
         String token = jwtTokenProvider.generateToken(UserContext.builder().userId(user.getId()).username(user.getUsername())
                 .credentialVersion(user.getCredentialVersion()).build());
         return AuthTokenResponse.builder()

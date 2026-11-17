@@ -37,6 +37,9 @@
       <el-button link @click="router.push({ path: '/account/password', query: { redirect: route.fullPath } })">
         {{ t('auth.changePassword') }}
       </el-button>
+      <el-button link @click="router.push({ path: '/account/email', query: { redirect: route.fullPath } })">
+        {{ t('accountEmail.settings') }}
+      </el-button>
       <el-button link class="logout" @click="handleLogout">
         {{ t('common.logout') }}
       </el-button>

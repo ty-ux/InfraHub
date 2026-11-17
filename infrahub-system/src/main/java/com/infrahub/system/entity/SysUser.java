@@ -16,6 +16,7 @@ public class SysUser extends SimpleTimeEntity {
     private String username;
     private String displayName;
     private String email;
+    private OffsetDateTime emailVerifiedAt;
     private String mobile;
     private String authType;
     @JsonIgnore

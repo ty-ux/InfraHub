@@ -10,18 +10,19 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const authStore = useAuthStore();
-  const requiresAuth = to.path !== '/login';
 
   if (!authStore.initialized) {
     await authStore.init();
   }
+
+  if (to.path === '/register') return true;
 
   if (authStore.isLoggedIn && authStore.currentUser?.mustChangePassword && to.path !== '/account/password') {
     const redirect = to.path === '/login' ? to.query.redirect : to.fullPath;
     return { path: '/account/password', query: { redirect } };
   }
 
-  if (!requiresAuth) {
+  if (to.path === '/login') {
     if (authStore.isLoggedIn) {
       return '/workspace';
     }

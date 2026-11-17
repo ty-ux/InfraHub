@@ -267,9 +267,19 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'routes.login', hidden: true },
   },
   {
+    path: '/register',
+    component: () => import('@/views/auth/RegisterView.vue'),
+    meta: { title: 'accountEmail.register', hidden: true },
+  },
+  {
     path: '/account/password',
     component: () => import('@/views/auth/ChangePasswordView.vue'),
     meta: { title: 'auth.changePassword', hidden: true },
+  },
+  {
+    path: '/account/email',
+    component: () => import('@/views/auth/EmailSettingsView.vue'),
+    meta: { title: 'accountEmail.settings', hidden: true },
   },
   {
     path: '/',

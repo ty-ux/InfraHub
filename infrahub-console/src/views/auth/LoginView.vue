@@ -104,13 +104,32 @@
             <h2>{{ t('auth.signIn') }}</h2>
             <p>{{ t('auth.hint') }}</p>
           </div>
+          <el-radio-group v-if="emailCodes" v-model="mode" class="login-method" :aria-label="t('accountEmail.loginMethod')">
+            <el-radio-button value="password">{{ t('accountEmail.passwordLogin') }}</el-radio-button>
+            <el-radio-button value="code">{{ t('accountEmail.codeLogin') }}</el-radio-button>
+          </el-radio-group>
           <el-form ref="formRef" :model="form" :rules="rules" label-position="top" @submit.prevent="submit">
-            <el-form-item :label="t('auth.username')" prop="username">
-              <el-input v-model="form.username" autocomplete="username" :placeholder="t('auth.enterUsername')" />
-            </el-form-item>
-            <el-form-item :label="t('auth.password')" prop="password">
-              <el-input v-model="form.password" type="password" autocomplete="current-password" show-password :placeholder="t('auth.enterPassword')" />
-            </el-form-item>
+            <template v-if="mode === 'password'">
+              <el-form-item :label="t('accountEmail.identifier')" prop="username">
+                <el-input v-model.trim="form.username" autocomplete="username" maxlength="254" :placeholder="t('accountEmail.enterIdentifier')" />
+              </el-form-item>
+              <el-form-item :label="t('auth.password')" prop="password">
+                <el-input v-model="form.password" type="password" autocomplete="current-password" show-password :placeholder="t('auth.enterPassword')" />
+              </el-form-item>
+            </template>
+            <template v-else>
+              <el-form-item :label="t('accountEmail.email')" prop="email">
+                <el-input v-model.trim="form.email" autocomplete="email" inputmode="email" maxlength="254" />
+              </el-form-item>
+              <el-form-item :label="t('accountEmail.code')" prop="code">
+                <div class="code-field">
+                  <el-input v-model.trim="form.code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" />
+                  <el-button :loading="sending" :disabled="!emailPattern.test(form.email) || form.email === sentTo" @click="sendCode">
+                    {{ t('accountEmail.sendCode') }}
+                  </el-button>
+                </div>
+              </el-form-item>
+            </template>
             <el-button type="primary" native-type="submit" :loading="loading" class="submit-btn">{{ t('auth.login') }}</el-button>
           </el-form>
         </div>
@@ -120,13 +139,15 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessage } from 'element-plus';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/store/auth';
 import { useTheme } from '@/composables/useTheme';
+import { authApi } from '@/api/auth';
+import { emailCodePattern, emailPattern } from '@/utils/email';
 
 const router = useRouter();
 const route = useRoute();
@@ -135,21 +156,56 @@ const { t } = useI18n();
 const { theme, toggleTheme } = useTheme();
 const formRef = ref<FormInstance>();
 const loading = ref(false);
+const sending = ref(false);
+const emailCodes = ref(false);
+const mode = ref<'password' | 'code'>('password');
+const sentTo = ref('');
+let resendTimer: ReturnType<typeof setTimeout> | undefined;
 const form = reactive({
   username: '',
   password: '',
+  email: '',
+  code: '',
 });
 
 const rules: FormRules = {
-  username: [{ required: true, message: t('common.required', { label: t('auth.username') }), trigger: 'blur' }],
+  username: [{ required: true, message: t('common.required', { label: t('accountEmail.identifier') }), trigger: 'blur' }],
   password: [{ required: true, message: t('common.required', { label: t('auth.password') }), trigger: 'blur' }],
+  email: [{ required: true, pattern: emailPattern, message: t('accountEmail.invalidEmail'), trigger: 'blur' }],
+  code: [{ required: true, pattern: emailCodePattern, message: t('accountEmail.invalidCode'), trigger: 'blur' }],
 };
+
+onMounted(async () => {
+  emailCodes.value = (await authApi.mailFeatures().catch(() => null))?.emailCodes ?? false;
+});
+onUnmounted(() => clearTimeout(resendTimer));
+
+async function sendCode() {
+  const email = form.email;
+  if (sending.value || email === sentTo.value || !emailPattern.test(email)) return;
+  sending.value = true;
+  try {
+    await authApi.requestLoginCode(email);
+    sentTo.value = email;
+    clearTimeout(resendTimer);
+    resendTimer = setTimeout(() => { sentTo.value = ''; }, 60_000);
+    ElMessage.success(t('accountEmail.loginCodeRequested'));
+  } catch {
+    // Request errors are shown by the HTTP client.
+  } finally {
+    sending.value = false;
+  }
+}
 
 async function submit() {
   if (loading.value || !await formRef.value?.validate().catch(() => false)) return;
   loading.value = true;
   try {
-    await authStore.login(form.username.trim(), form.password);
+    if (mode.value === 'code') {
+      await authStore.loginWithCode(form.email, form.code);
+    } else {
+      await authStore.login(form.username, form.password);
+    }
     if (!authStore.currentUser?.mustChangePassword) ElMessage.success(t('auth.loginSuccess'));
     const redirect = typeof route.query.redirect === 'string' && /^\/(?![/\\])/.test(route.query.redirect)
       ? route.query.redirect : '/workspace';
@@ -514,6 +570,16 @@ async function submit() {
   height: var(--control-h);
   margin: var(--space-xs) 0 var(--space-md);
   font-weight: 500;
+}
+
+.login-method {
+  margin-bottom: var(--space-md);
+}
+
+.code-field {
+  display: flex;
+  width: 100%;
+  gap: var(--space-xs);
 }
 
 @media (max-width: 900px) {

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManagers;
@@ -33,6 +34,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/actuator/health", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                         .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/email/features").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/email/login/request", "/api/auth/email/login", "/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/me", "/api/auth/password").authenticated()
                         .anyRequest()
                         .access(AuthorizationManagers.allOf(AuthenticatedAuthorizationManager.authenticated(),
