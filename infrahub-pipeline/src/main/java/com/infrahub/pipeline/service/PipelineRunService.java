@@ -151,6 +151,7 @@ public class PipelineRunService extends ServiceImpl<PipelineRunMapper, PipelineR
         run.setTriggerType("MANUAL");
         run.setRunStatus("RUNNING");
         run.setStartTime(startedAt);
+        pipelineStepExecutorRegistry.validateRun(run, steps);
         save(run);
         return new PipelineRunContext(run, stages, stepsByStage);
     }

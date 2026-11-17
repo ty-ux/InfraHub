@@ -20,6 +20,7 @@ public class PipelineStepService extends ServiceImpl<PipelineStepMapper, Pipelin
     private static final String EXECUTOR_LOCAL_SHELL = "LOCAL_SHELL";
     private static final String EXECUTOR_RELEASE_DEPLOY = "RELEASE_DEPLOY";
     private static final String EXECUTOR_REGISTER_ARTIFACT = "REGISTER_ARTIFACT";
+    private static final String EXECUTOR_COMPOSE_TEMPLATE = "COMPOSE_TEMPLATE";
 
     private final PipelineStageService pipelineStageService;
 
@@ -41,7 +42,7 @@ public class PipelineStepService extends ServiceImpl<PipelineStepMapper, Pipelin
 
     public boolean createForStage(Long stageId, PipelineStep body) {
         ensureStageExists(stageId);
-        validateLocalShellStep(body);
+        validateManualStep(body);
         body.setId(null);
         body.setStageId(stageId);
         applyDefaults(body);
@@ -59,7 +60,15 @@ public class PipelineStepService extends ServiceImpl<PipelineStepMapper, Pipelin
         }
         Long stageId = body.getStageId() == null ? existing.getStageId() : body.getStageId();
         ensureStageExists(stageId);
-        validateLocalShellStep(body);
+        if (EXECUTOR_COMPOSE_TEMPLATE.equals(existing.getExecutorType())) {
+            if (!existing.getStageId().equals(stageId) || !EXECUTOR_COMPOSE_TEMPLATE.equals(body.getExecutorType())) {
+                throw new BizException(ErrorCode.VALIDATION_ERROR, "不能更换 Compose 模板步骤的阶段或执行器");
+            }
+            body.setScriptContent(existing.getScriptContent());
+            body.setContinueOnFail(false);
+        } else {
+            validateManualStep(body);
+        }
         body.setId(stepId);
         body.setStageId(stageId);
         applyDefaults(body);
@@ -83,7 +92,7 @@ public class PipelineStepService extends ServiceImpl<PipelineStepMapper, Pipelin
         }
     }
 
-    private void validateLocalShellStep(PipelineStep body) {
+    private void validateManualStep(PipelineStep body) {
         String executorType = normalizeExecutorType(body.getExecutorType());
         if (!EXECUTOR_LOCAL_SHELL.equals(executorType) && !EXECUTOR_RELEASE_DEPLOY.equals(executorType)
                 && !EXECUTOR_REGISTER_ARTIFACT.equals(executorType)) {

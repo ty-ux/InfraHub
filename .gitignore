@@ -26,6 +26,7 @@ infrahub-release/src/test/java/com/infrahub/release/service/*
 !infrahub-release/src/test/java/com/infrahub/release/pipeline/
 infrahub-release/src/test/java/com/infrahub/release/pipeline/*
 !infrahub-release/src/test/java/com/infrahub/release/pipeline/RegisterArtifactPipelineStepExecutorTest.java
+!infrahub-release/src/test/java/com/infrahub/release/pipeline/ComposePipelineTemplateTest.java
 !infrahub-release/src/test/java/com/infrahub/release/controller/
 infrahub-release/src/test/java/com/infrahub/release/controller/*
 !infrahub-release/src/test/java/com/infrahub/release/controller/AssetHostCreateHttpContractTest.java

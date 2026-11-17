@@ -8,6 +8,7 @@ import {
   fillTextArea,
   fillTextField,
   openCreateDialog,
+  openPage,
   saveDialog,
   tableRow,
 } from './helpers/ui';
@@ -19,6 +20,51 @@ test.describe('pipeline stage and step configuration', () => {
     await loginAsAdmin(page);
     await mockResourceApis(page);
     await mockPipelineApis(page);
+  });
+
+  test('creates a Compose pipeline from form values and selected checks', async ({ page }) => {
+    const success = (data: unknown) => ({ json: { code: 'SUCCESS', data } });
+    await page.route('**/api/rollbacks/application/options', (route) => route.fulfill(success({
+      apps: [{ id: 1, name: '示例应用' }], envs: [{ id: 20, name: '测试环境' }],
+      services: [{ id: 30, name: '前后端服务', appId: 1 }], versions: [],
+    })));
+    await page.route('**/api/rollbacks/application/instances?*', (route) => route.fulfill(success([
+      { id: 40, hostId: 50, instanceName: 'example-compose', instanceType: 'DOCKER_COMPOSE' },
+    ])));
+    await page.route('**/api/secret-refs?*', (route) => route.fulfill(success({ records: [], total: 0 })));
+    await page.route('**/api/pipelines/templates/compose/build-contexts', (route) => route.fulfill(success(['desktop-linux'])));
+    await page.route('**/api/pipelines/templates/compose', (route) => route.fulfill(success({ pipelineId: 77 })));
+    await page.route('**/api/pipelines/77', (route) => route.fulfill(success({
+      id: 77, appId: 1, pipelineCode: 'example-compose', pipelineName: '示例联合交付', enabled: true,
+    })));
+
+    await openPage(page, '流水线定义');
+    await page.getByRole('button', { name: '从模板新建', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Docker Compose 联合交付' });
+    await fillTextField(dialog, '流水线名称', '示例联合交付');
+    await fillTextField(dialog, '流水线编码', 'example-compose');
+    await chooseSelectOption(dialog, page, '环境名称', '测试环境');
+    await chooseSelectOption(dialog, page, '服务名称', '前后端服务');
+    await expect(dialog.getByText('example-compose', { exact: false })).toBeVisible();
+    await fillTextField(dialog, 'Git 仓库地址', 'https://git.example.com/project.git');
+    await fillTextField(dialog, '镜像仓库地址', 'registry.example.com');
+    const images = dialog.locator('.image-fields');
+    for (const [index, service] of ['backend', 'frontend'].entries()) {
+      await fillTextField(images.nth(index), '镜像名称', `team/project-${service}`);
+      await fillTextField(images.nth(index), 'Dockerfile', `${service}/Dockerfile`);
+    }
+    await dialog.getByText('部署后执行 HTTP 健康检查', { exact: true }).click();
+    await fillTextField(dialog, '从目标服务器访问的检查地址', 'http://127.0.0.1:8080/health');
+    await expect(dialog.getByRole('complementary', { name: '阶段预览' })).toContainText('部署与健康检查');
+    const request = page.waitForRequest((candidate) => candidate.method() === 'POST'
+      && candidate.url().endsWith('/api/pipelines/templates/compose'));
+    await dialog.getByRole('button', { name: '创建流水线', exact: true }).click();
+    expect((await request).postDataJSON()).toMatchObject({
+      appId: 1, envId: 20, serviceId: 30, pipelineCode: 'example-compose',
+      deployRoot: '/opt/infrahub/example-compose', preflight: true, healthUrl: 'http://127.0.0.1:8080/health',
+      backend: { dockerfile: 'backend/Dockerfile' }, frontend: { dockerfile: 'frontend/Dockerfile' },
+    });
+    await expect(page).toHaveURL(/\/pipeline\/defs\/77$/);
   });
 
   test('pipeline can be configured and run from definition detail page', async ({ page }) => {

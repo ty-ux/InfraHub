@@ -8,6 +8,8 @@ public interface PipelineStepExecutor {
 
     String executorType();
 
+    default void validateRun(PipelineRun run, PipelineStep step) {}
+
     /**
      * 执行一个流水线步骤。
      *

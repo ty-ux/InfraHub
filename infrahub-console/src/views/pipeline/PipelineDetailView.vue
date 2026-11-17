@@ -90,10 +90,11 @@
           <el-input v-model="stepForm.stepType" />
         </el-form-item>
         <el-form-item :label="t('fields.executorType')" prop="executorType">
-          <el-select v-model="stepForm.executorType" filterable style="width: 100%">
+          <el-select v-model="stepForm.executorType" :disabled="stepForm.executorType === 'COMPOSE_TEMPLATE'" filterable style="width: 100%">
             <el-option label="LOCAL_SHELL" value="LOCAL_SHELL" />
             <el-option label="RELEASE_DEPLOY" value="RELEASE_DEPLOY" />
             <el-option :label="t('pipelineDelivery.registerArtifact')" value="REGISTER_ARTIFACT" />
+            <el-option v-if="stepForm.executorType === 'COMPOSE_TEMPLATE'" :label="t('composePipeline.title')" value="COMPOSE_TEMPLATE" />
           </el-select>
         </el-form-item>
         <el-form-item :label="t('fields.stepOrder')" prop="stepOrder">
@@ -103,6 +104,7 @@
           <el-input v-model="stepForm.scriptContent" type="textarea" :rows="4" />
         </el-form-item>
         <el-alert v-if="stepForm.executorType === 'REGISTER_ARTIFACT'" :title="t('pipelineDelivery.descriptorHint')" :closable="false" />
+        <el-alert v-if="stepForm.executorType === 'COMPOSE_TEMPLATE'" :title="t('composePipeline.managedStep')" :closable="false" />
         <el-form-item :label="t('fields.timeoutSeconds')" prop="timeoutSeconds">
           <el-input-number v-model="stepForm.timeoutSeconds" :min="0" :controls="false" style="width: 100%" />
         </el-form-item>
@@ -110,7 +112,7 @@
           <el-input-number v-model="stepForm.retryTimes" :min="0" :controls="false" style="width: 100%" />
         </el-form-item>
         <el-form-item :label="t('fields.continueOnFail')" prop="continueOnFail">
-          <el-switch v-model="stepForm.continueOnFail" />
+          <el-switch v-model="stepForm.continueOnFail" :disabled="stepForm.executorType === 'COMPOSE_TEMPLATE'" />
         </el-form-item>
       </el-form>
       <template #footer>

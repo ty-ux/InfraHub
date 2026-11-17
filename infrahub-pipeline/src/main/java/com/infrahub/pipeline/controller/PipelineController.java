@@ -22,6 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.infrahub.pipeline.service.PipelineStageService;
+import com.infrahub.pipeline.service.PipelineStepService;
 
 @RestController
 @Validated
@@ -32,6 +36,9 @@ public class PipelineController {
     private final PipelineDefService pipelineDefService;
     private final PipelineRunService pipelineRunService;
     private final PipelineAccessService access;
+    private final PipelineStageService stages;
+    private final PipelineStepService steps;
+    private final ObjectMapper objectMapper;
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('PIPELINE_VIEW','PIPELINE_EXECUTE','SYSTEM_ADMIN')")
@@ -87,4 +94,25 @@ public class PipelineController {
         );
     }
 
+    @GetMapping("/{id}/compose-scope")
+    @PreAuthorize("hasAnyAuthority('PIPELINE_EXECUTE','SYSTEM_ADMIN')")
+    public ApiResponse<ComposeScope> composeScope(@PathVariable Long id) {
+        PipelineDef pipeline = pipelineDefService.getById(id);
+        if (pipeline == null) throw new BizException(ErrorCode.VALIDATION_ERROR, "流水线不存在");
+        ApplicationAccess.require(pipeline.getAppId(), "PIPELINE_EXECUTE");
+        var stageIds = stages.listByPipelineIdOrdered(id).stream().map(stage -> stage.getId()).toList();
+        var step = steps.listByStageIdsOrdered(stageIds).stream()
+                .filter(item -> "COMPOSE_TEMPLATE".equals(item.getExecutorType())).findFirst()
+                .orElseThrow(() -> new BizException(ErrorCode.VALIDATION_ERROR, "流水线没有 Compose 模板"));
+        try {
+            var spec = objectMapper.readTree(step.getScriptContent()).path("spec");
+            return ApiResponse.success(new ComposeScope(pipeline.getAppId(), spec.path("envId").asLong(),
+                    spec.path("serviceId").asLong()), TraceIdHolder.get());
+        } catch (JsonProcessingException exception) {
+            throw new BizException(ErrorCode.VALIDATION_ERROR, "Compose 模板配置无法读取");
+        }
+    }
+
+    public record ComposeScope(Long appId, long envId, long serviceId) {
+    }
 }

@@ -11,6 +11,9 @@
     @retry="loadApps"
   >
     <CrudPage v-if="config" :key="selectedAppId ?? 'all'" ref="crudPageRef" :config="config">
+      <template #toolbar-extra>
+        <el-button v-if="canEdit" @click="templateVisible = true">{{ t('composePipeline.create') }}</el-button>
+      </template>
       <template #row-actions="{ row }">
         <router-link :to="`/pipeline/defs/${row.id}`">
           <el-button link type="primary">{{ t(canEdit ? 'common.configure' : 'access.view') }}</el-button>
@@ -23,6 +26,7 @@
   </PipelineBrowseLayout>
 
   <PipelineRunDialog v-model="runDialogVisible" :pipeline="selectedPipeline" />
+  <ComposePipelineDialog v-if="templateVisible" v-model="templateVisible" :initial-app-id="selectedAppId ?? undefined" />
 </template>
 
 <script setup lang="ts">
@@ -35,6 +39,7 @@ import { useAuthStore } from '@/store/auth';
 import { getPageConfig } from '@/views/configs/page-configs';
 import PipelineBrowseLayout, { type BrowseNode } from './PipelineBrowseLayout.vue';
 import PipelineRunDialog from './PipelineRunDialog.vue';
+import ComposePipelineDialog from './ComposePipelineDialog.vue';
 
 const authStore = useAuthStore();
 const { t } = useI18n();
@@ -55,6 +60,7 @@ const config = computed(() => {
   };
 });
 const canEdit = computed(() => authStore.canAccess(['SYSTEM_ADMIN']));
+const templateVisible = ref(false);
 const runDialogVisible = ref(false);
 const selectedPipeline = ref<Record<string, unknown> | null>(null);
 

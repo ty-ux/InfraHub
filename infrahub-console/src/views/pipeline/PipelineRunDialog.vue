@@ -8,12 +8,12 @@
         <strong>{{ pipeline?.pipelineName ?? pipeline?.pipelineCode }}</strong>
       </el-form-item>
       <el-form-item :label="t('fields.envName')" required>
-        <el-select v-model="envId" filterable>
+        <el-select v-model="envId" :disabled="isComposeTemplate" filterable>
           <el-option v-for="env in envs" :key="Number(env.id)" :label="String(env.envName)" :value="Number(env.id)" />
         </el-select>
       </el-form-item>
       <el-form-item v-if="deploys" :label="t('fields.serviceName')" required>
-        <el-select v-model="serviceId" filterable>
+        <el-select v-model="serviceId" :disabled="isComposeTemplate" filterable>
           <el-option v-for="service in services" :key="Number(service.id)" :label="String(service.serviceName)" :value="Number(service.id)" />
         </el-select>
       </el-form-item>
@@ -41,7 +41,7 @@ import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { ElMessage } from 'element-plus';
-import { getPipelineExecutorTypes, listPipelineCatalog, runPipeline } from '@/api/pipeline';
+import { getComposePipelineScope, getPipelineExecutorTypes, listPipelineCatalog, runPipeline } from '@/api/pipeline';
 import { envApi, serviceApi } from '@/api/resource';
 import { versionApi } from '@/api/release';
 import { useAuthStore } from '@/store/auth';
@@ -64,6 +64,7 @@ const submitting = ref(false);
 const submitError = ref('');
 const deploys = computed(() => types.value.includes('RELEASE_DEPLOY'));
 const registers = computed(() => types.value.includes('REGISTER_ARTIFACT'));
+const isComposeTemplate = computed(() => types.value.includes('COMPOSE_TEMPLATE'));
 const legacyDeploy = computed(() => deploys.value && !registers.value);
 const missingDeployPermission = computed(() => deploys.value && !auth.canAccess(['RELEASE_EXECUTE'])
   && !auth.canAccessApp('PIPELINE_DEPLOY', Number(props.pipeline?.appId)));
@@ -92,6 +93,16 @@ watch(visible, async (open, _previous, onCleanup) => {
       if (!active) return;
       services.value = rows;
       if (rows.length === 1) serviceId.value = Number(rows[0].id);
+      if (isComposeTemplate.value) {
+        const scope = await getComposePipelineScope(Number(pipeline.id));
+        if (!active) return;
+        if (!environments.some((row) => Number(row.id) === scope.envId) || !rows.some((row) => Number(row.id) === scope.serviceId)) {
+          loadFailed.value = true;
+          return;
+        }
+        envId.value = scope.envId;
+        serviceId.value = scope.serviceId;
+      }
     } else if (!registers.value && !legacyDeploy.value) {
       const rows = (await listPipelineCatalog(versionApi.page)).filter(belongsToApp);
       if (active) versions.value = rows;

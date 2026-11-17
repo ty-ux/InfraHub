@@ -607,7 +607,7 @@ public class ReleaseRollbackOrderService extends ServiceImpl<ReleaseRollbackOrde
                                 .password(secretValueResolver.resolve(sshConfig.getPasswordSecretRefId()))
                                 .privateKeyPath(secretValueResolver.resolve(sshConfig.getPrivateKeySecretRefId()))
                                 .passphrase(secretValueResolver.resolve(sshConfig.getPassphraseSecretRefId()))
-                                .command(renderCommand(commandTemplate, service, env, targetVersion, artifact, deployConfig))
+                                .command(renderCommand(commandTemplate, service, env, targetVersion, artifact, instance, deployConfig))
                                 .build()
                 );
             } catch (RuntimeException sshFailure) {
@@ -855,6 +855,7 @@ public class ReleaseRollbackOrderService extends ServiceImpl<ReleaseRollbackOrde
             BaseEnv env,
             ReleaseVersion version,
             ReleaseArtifact artifact,
+            RuntimeServiceInstance instance,
             Map<String, String> deployConfig
     ) {
         Map<String, String> variables = new LinkedHashMap<>();
@@ -865,6 +866,9 @@ public class ReleaseRollbackOrderService extends ServiceImpl<ReleaseRollbackOrde
         variables.put("versionNo", version.getVersionNo());
         variables.put("artifactUri", artifact.getArtifactUri());
         variables.put("artifactChecksum", artifact.getChecksum());
+        variables.put("artifactUriShell", com.infrahub.release.pipeline.ComposeRemoteCommand.quote(artifact.getArtifactUri()));
+        variables.put("artifactChecksumShell", com.infrahub.release.pipeline.ComposeRemoteCommand.quote(artifact.getChecksum()));
+        variables.put("instanceNameShell", com.infrahub.release.pipeline.ComposeRemoteCommand.quote(instance.getInstanceName()));
         DeployRuntimeConfig runtimeConfig = DeployRuntimeConfig.from(deployConfig);
         variables.put("deployRoot", runtimeConfig.root());
         variables.put("deployPort", String.valueOf(runtimeConfig.port()));

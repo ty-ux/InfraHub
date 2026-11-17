@@ -58,6 +58,48 @@ export async function getPipelineExecutorTypes(pipelineId: number | string) {
   return stepGroups.flat().map((step) => String(step.executorType ?? '').toUpperCase());
 }
 
+export interface ComposePipelineImage {
+  composeService: string;
+  repository: string;
+  context: string;
+  dockerfile: string;
+}
+
+export interface ComposePipelineScope {
+  appId: number;
+  envId: number;
+  serviceId: number;
+}
+
+export interface ComposePipelineTemplate extends ComposePipelineScope {
+  pipelineCode: string;
+  pipelineName: string;
+  repositoryUrl: string;
+  branch: string;
+  gitSshSecretRefId?: number;
+  dockerContext?: string;
+  registry: string;
+  backend: ComposePipelineImage;
+  frontend: ComposePipelineImage;
+  composeFile: string;
+  deployRoot: string;
+  preflight: boolean;
+  healthUrl?: string;
+  healthTimeoutSeconds?: number;
+}
+
+export function createComposePipeline(payload: ComposePipelineTemplate) {
+  return post<{ pipelineId: number }>('/api/pipelines/templates/compose', payload);
+}
+
+export function getComposeBuildContexts() {
+  return get<string[]>('/api/pipelines/templates/compose/build-contexts');
+}
+
+export function getComposePipelineScope(pipelineId: number | string): Promise<ComposePipelineScope> {
+  return get<ComposePipelineScope>(`/api/pipelines/${pipelineId}/compose-scope`);
+}
+
 export interface RunPipelinePayload {
   envId?: number;
   serviceId?: number;

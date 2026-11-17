@@ -36,6 +36,13 @@ public class PipelineStepExecutorRegistry {
         return executor.execute(run, step, stepRun);
     }
 
+    public void validateRun(PipelineRun run, List<PipelineStep> steps) {
+        for (PipelineStep step : steps) {
+            PipelineStepExecutor executor = executors.get(normalize(step.getExecutorType()));
+            if (executor != null) executor.validateRun(run, step);
+        }
+    }
+
     private static String normalize(String value) {
         return value == null ? "" : value.toUpperCase(Locale.ROOT);
     }
