@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RequiredArgsConstructor
 @RequestMapping("/api/pipeline-steps")
-@PreAuthorize("hasAnyAuthority('PIPELINE_EXECUTE','SYSTEM_ADMIN')")
+@PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
 public class PipelineStepController {
 
     private final PipelineStepService pipelineStepService;

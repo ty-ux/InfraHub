@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class AuthService {
         if (sysUser == null) {
             throw new BizException(ErrorCode.USER_NOT_FOUND);
         }
-        if (!"LOCAL".equalsIgnoreCase(sysUser.getAuthType())) {
+        if (!"ENABLED".equals(sysUser.getStatus()) || !"LOCAL".equalsIgnoreCase(sysUser.getAuthType())) {
             throw new BizException(ErrorCode.FORBIDDEN, "当前用户不支持本地登录");
         }
         if (!matchesPassword(request.getPassword(), sysUser.getPasswordHash())) {
@@ -39,13 +38,7 @@ public class AuthService {
         sysUser.setLastLoginAt(OffsetDateTime.now());
         sysUserService.updateById(sysUser);
 
-        Set<String> authorities = sysUserService.getAuthorities(sysUser.getId());
-        UserContext userContext = UserContext.builder()
-                .userId(sysUser.getId())
-                .username(sysUser.getUsername())
-                .displayName(sysUser.getDisplayName())
-                .authorities(authorities)
-                .build();
+        UserContext userContext = sysUserService.getActiveContext(sysUser);
         String token = jwtTokenProvider.generateToken(userContext);
         return AuthTokenResponse.builder()
                 .accessToken(token)
@@ -64,6 +57,8 @@ public class AuthService {
                 .username(userContext.getUsername())
                 .displayName(userContext.getDisplayName())
                 .authorities(userContext.getAuthorities())
+                .allAppPermissions(userContext.getAllAppPermissions())
+                .applicationPermissions(userContext.getApplicationPermissions())
                 .build();
     }
 

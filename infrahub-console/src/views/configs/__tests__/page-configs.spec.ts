@@ -251,7 +251,6 @@ describe('page-configs: pipelineRuns 只读与状态列', () => {
     expect(status?.slot).toBe('runStatus');
     const duration = config.columns.find(item => item.prop === 'durationMs');
     expect(duration?.slot).toBe('duration');
-    // 只读入口沿用现有流水线执行权限，不新增权限定义
-    expect(config.createAuthority).toEqual(['PIPELINE_EXECUTE', 'SYSTEM_ADMIN']);
+    expect(config.createAuthority).toEqual(['PIPELINE_VIEW', 'PIPELINE_EXECUTE', 'SYSTEM_ADMIN']);
   });
 });

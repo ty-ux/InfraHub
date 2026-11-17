@@ -1,11 +1,13 @@
 package com.infrahub.base.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.infrahub.base.entity.BaseServiceEntity;
 import com.infrahub.base.service.BaseServiceEntityService;
 import com.infrahub.common.api.ApiResponse;
 import com.infrahub.common.api.PageQuery;
 import com.infrahub.common.api.PageResponse;
+import com.infrahub.common.context.ApplicationAccess;
 import com.infrahub.common.support.TraceIdHolder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,11 @@ public class BaseServiceController {
     private final BaseServiceEntityService baseServiceEntityService;
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('APP_VIEW','SYSTEM_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('APP_VIEW','PIPELINE_EXECUTE','SYSTEM_ADMIN')")
     public ApiResponse<PageResponse<BaseServiceEntity>> page(@Valid PageQuery query) {
-        return ApiResponse.success(PageResponse.from(baseServiceEntityService.page(new Page<>(query.getPageNum(), query.getPageSize()))), TraceIdHolder.get());
+        var filter = Wrappers.<BaseServiceEntity>lambdaQuery().orderByAsc(BaseServiceEntity::getId);
+        ApplicationAccess.restrict(filter, BaseServiceEntity::getAppId, ApplicationAccess.allowedApps("APP_VIEW", "PIPELINE_EXECUTE"));
+        return ApiResponse.success(PageResponse.from(baseServiceEntityService.page(new Page<>(query.getPageNum(), query.getPageSize()), filter)), TraceIdHolder.get());
     }
 
     @PostMapping

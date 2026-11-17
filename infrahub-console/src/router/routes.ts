@@ -147,22 +147,22 @@ export const appRoutes: AppRouteRecord[] = [
   {
     path: '/pipeline/defs',
     component: () => import('@/views/pipeline/PipelineDefsView.vue'),
-    meta: { title: 'routes.pipelineDefs', group: 'delivery', order: 10, icon: Connection, authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], pageKey: 'pipelineDefs' },
+    meta: { title: 'routes.pipelineDefs', group: 'delivery', order: 10, icon: Connection, authorities: ['PIPELINE_VIEW', 'PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], pageKey: 'pipelineDefs' },
   },
   {
     path: '/pipeline/defs/:id',
     component: () => import('@/views/pipeline/PipelineDetailView.vue'),
-    meta: { title: 'routes.pipelineDetail', group: 'delivery', activeMenuPath: '/pipeline/defs', authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], hidden: true },
+    meta: { title: 'routes.pipelineDetail', group: 'delivery', activeMenuPath: '/pipeline/defs', authorities: ['PIPELINE_VIEW', 'PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], hidden: true },
   },
   {
     path: '/pipeline/runs',
     component: () => import('@/views/pipeline/PipelineRunsView.vue'),
-    meta: { title: 'routes.pipelineRuns', group: 'delivery', order: 20, icon: DataLine, authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'] },
+    meta: { title: 'routes.pipelineRuns', group: 'delivery', order: 20, icon: DataLine, authorities: ['PIPELINE_VIEW', 'PIPELINE_EXECUTE', 'SYSTEM_ADMIN'] },
   },
   {
     path: '/pipeline/runs/:id/steps',
     component: () => import('@/views/pipeline/RunStepsView.vue'),
-    meta: { title: 'routes.stepRuns', group: 'delivery', activeMenuPath: '/pipeline/runs', authorities: ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], hidden: true },
+    meta: { title: 'routes.stepRuns', group: 'delivery', activeMenuPath: '/pipeline/runs', authorities: ['PIPELINE_VIEW', 'PIPELINE_EXECUTE', 'SYSTEM_ADMIN'], hidden: true },
   },
   {
     path: '/monitor/targets',
@@ -191,12 +191,12 @@ export const appRoutes: AppRouteRecord[] = [
   },
   {
     path: '/system/users',
-    component: ConfiguredPageView,
+    component: () => import('@/views/system/AccessManagementView.vue'),
     meta: { title: 'routes.users', group: 'system', order: 50, icon: User, authorities: ['SYSTEM_ADMIN'], pageKey: 'systemUsers' },
   },
   {
     path: '/system/roles',
-    component: ConfiguredPageView,
+    component: () => import('@/views/system/AccessManagementView.vue'),
     meta: { title: 'routes.roles', group: 'system', order: 51, icon: Avatar, authorities: ['SYSTEM_ADMIN'], pageKey: 'systemRoles' },
   },
   {
@@ -227,7 +227,7 @@ export const appRoutes: AppRouteRecord[] = [
   {
     path: '/system/approvals',
     component: () => import('@/views/system/ApprovalCenterView.vue'),
-    meta: { title: 'routes.approvals', group: 'governance', order: 40, icon: CircleCheck, authorities: ['SYSTEM_ADMIN', 'APPROVAL_VIEW'] },
+    meta: { title: 'routes.approvals', group: 'governance', order: 40, icon: CircleCheck, authorities: ['SYSTEM_ADMIN'] },
   },
   {
     path: '/system/governance-chain',

@@ -29,4 +29,6 @@ export interface CurrentUserResponse {
   username: string;
   displayName: string;
   authorities: string[];
+  allAppPermissions?: string[];
+  applicationPermissions?: Record<string, number[]>;
 }

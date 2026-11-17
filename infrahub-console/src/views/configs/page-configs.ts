@@ -15,7 +15,7 @@ const releaseCancelAuth = ['RELEASE_CANCEL', 'SYSTEM_ADMIN'];
 const rollbackViewAuth = ['ROLLBACK_VIEW', 'SYSTEM_ADMIN'];
 const rollbackCreateAuth = ['ROLLBACK_CREATE', 'SYSTEM_ADMIN'];
 const rollbackExecuteAuth = ['ROLLBACK_EXECUTE', 'SYSTEM_ADMIN'];
-const pipelineAuth = ['PIPELINE_EXECUTE', 'SYSTEM_ADMIN'];
+const pipelineAuth = ['PIPELINE_VIEW', 'PIPELINE_EXECUTE', 'SYSTEM_ADMIN'];
 
 // 回滚单页面不提供通用编辑：专用保存路径是 PUT /api/rollbacks/{id}，后端只接受 toVersionId；
 // 通用编辑会把整张表单提交到同一地址，除目标版本外的字段被静默忽略却提示成功。
@@ -1057,7 +1057,7 @@ function createConfigs(): Record<string, CrudPageConfig<Record<string, unknown>>
         { prop: 'remark', label: field('remark'), type: 'textarea' },
       ],
       defaultForm: { enabled: true, version: 1 },
-      createAuthority: pipelineAuth,
+      createAuthority: systemAdmin,
       deleteAuthority: systemAdmin,
     },
     pipelineRuns: readonlyConfig(pageTitle('pipelineRuns'), pageDesc('pipelineRuns'), {

@@ -22,7 +22,7 @@ public class BaseEnvController {
     private final BaseEnvService baseEnvService;
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('APP_VIEW','SYSTEM_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('APP_VIEW','PIPELINE_EXECUTE','SYSTEM_ADMIN')")
     public ApiResponse<PageResponse<BaseEnv>> page(@Valid PageQuery query) {
         return ApiResponse.success(PageResponse.from(baseEnvService.page(new Page<>(query.getPageNum(), query.getPageSize()))), TraceIdHolder.get());
     }

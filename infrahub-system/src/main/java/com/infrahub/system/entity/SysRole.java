@@ -13,4 +13,5 @@ public class SysRole extends SimpleTimeEntity {
     private String roleCode;
     private String roleName;
     private String status;
+    private String appScope;
 }

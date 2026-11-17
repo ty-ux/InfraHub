@@ -1,6 +1,7 @@
 package com.infrahub.pipeline.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.infrahub.common.context.ApplicationAccess;
 import com.infrahub.common.context.UserContextHolder;
 import com.infrahub.common.error.ErrorCode;
 import com.infrahub.common.exception.BizException;
@@ -116,6 +117,12 @@ public class PipelineRunService extends ServiceImpl<PipelineRunMapper, PipelineR
         if (pipeline == null || Boolean.FALSE.equals(pipeline.getEnabled()) || Boolean.TRUE.equals(pipeline.getIsDeleted())) {
             throw new BizException(ErrorCode.VALIDATION_ERROR, "流水线不存在或未启用");
         }
+        if (serviceId != null && !baseMapper.belongsToApplication(serviceId, pipeline.getAppId())) {
+            throw new BizException(ErrorCode.VALIDATION_ERROR, "服务不属于当前应用");
+        }
+        if (versionId != null && !baseMapper.versionBelongsToApplication(versionId, pipeline.getAppId())) {
+            throw new BizException(ErrorCode.VALIDATION_ERROR, "版本不属于当前应用");
+        }
 
         List<PipelineStage> stages = pipelineStageService.listByPipelineIdOrdered(pipelineId);
         if (stages.isEmpty()) {
@@ -164,8 +171,9 @@ public class PipelineRunService extends ServiceImpl<PipelineRunMapper, PipelineR
         }
         if ((deploy < 0 && (register < 0 || serviceId == null)) || releaseId != null) return;
         var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getAuthorities().stream().noneMatch(authority ->
-                List.of("RELEASE_EXECUTE", "SYSTEM_ADMIN").contains(authority.getAuthority()))) {
+        boolean globalRelease = auth != null && auth.getAuthorities().stream().anyMatch(authority ->
+                List.of("RELEASE_EXECUTE", "SYSTEM_ADMIN").contains(authority.getAuthority()));
+        if (!globalRelease && !ApplicationAccess.permits(appId, "PIPELINE_DEPLOY")) {
             throw new AccessDeniedException("运行部署流水线需要发布执行权限");
         }
         if (deploy >= 0 && (register < 0 || register > deploy || deploy != executors.lastIndexOf("RELEASE_DEPLOY"))) {

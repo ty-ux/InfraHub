@@ -20,6 +20,12 @@ public interface PipelineRunMapper extends BaseMapper<PipelineRun> {
             """)
     boolean hasDeploymentTarget(Long serviceId, Long appId, Long envId);
 
+    @Select("SELECT EXISTS (SELECT 1 FROM base_service WHERE id = #{serviceId} AND app_id = #{appId} AND is_deleted = false)")
+    boolean belongsToApplication(Long serviceId, Long appId);
+
+    @Select("SELECT EXISTS (SELECT 1 FROM release_version WHERE id = #{versionId} AND app_id = #{appId})")
+    boolean versionBelongsToApplication(Long versionId, Long appId);
+
     @Select("""
             <script>
             SELECT r.id, v.version_no, v.artifact_id

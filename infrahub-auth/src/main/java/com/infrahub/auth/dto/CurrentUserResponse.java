@@ -3,6 +3,7 @@ package com.infrahub.auth.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -13,4 +14,6 @@ public class CurrentUserResponse {
     private String username;
     private String displayName;
     private Set<String> authorities;
+    private Set<String> allAppPermissions;
+    private Map<String, Set<Long>> applicationPermissions;
 }

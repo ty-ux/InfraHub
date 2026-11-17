@@ -13,9 +13,9 @@
     <CrudPage v-if="config" :key="selectedAppId ?? 'all'" ref="crudPageRef" :config="config">
       <template #row-actions="{ row }">
         <router-link :to="`/pipeline/defs/${row.id}`">
-          <el-button link type="primary">{{ t('common.configure') }}</el-button>
+          <el-button link type="primary">{{ t(canEdit ? 'common.configure' : 'access.view') }}</el-button>
         </router-link>
-        <el-button v-if="canRun && row.enabled" link type="primary" @click="openRunDialog(row)">
+        <el-button v-if="row.enabled && authStore.canAccessApp('PIPELINE_EXECUTE', Number(row.appId))" link type="primary" @click="openRunDialog(row)">
           {{ t('common.runPipeline') }}
         </el-button>
       </template>
@@ -54,7 +54,7 @@ const config = computed(() => {
     extraQuery: { appId: selectedAppId.value },
   };
 });
-const canRun = computed(() => authStore.canAccess(['PIPELINE_EXECUTE', 'SYSTEM_ADMIN']));
+const canEdit = computed(() => authStore.canAccess(['SYSTEM_ADMIN']));
 const runDialogVisible = ref(false);
 const selectedPipeline = ref<Record<string, unknown> | null>(null);
 

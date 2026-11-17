@@ -11,19 +11,17 @@ import java.util.List;
 public interface SysUserMapper extends BaseMapper<SysUser> {
 
     @Select("""
-        select distinct p.perm_code
+        select distinct r.role_code, p.perm_code, r.app_scope, b.id as app_id
         from sys_user_role ur
-        join sys_role_permission rp on rp.role_id = ur.role_id
-        join sys_permission p on p.id = rp.permission_id
+        join sys_role r on r.id = ur.role_id and r.status = 'ENABLED'
+        left join sys_role_permission rp on rp.role_id = r.id
+        left join sys_permission p on p.id = rp.permission_id
+        left join sys_role_app a on a.role_id = r.id and r.app_scope = 'SELECTED'
+        left join base_app b on b.id = a.app_id and b.is_deleted = false
         where ur.user_id = #{userId}
         """)
-    List<String> selectPermissionCodesByUserId(Long userId);
+    List<Grant> selectGrants(Long userId);
 
-    @Select("""
-        select distinct r.role_code
-        from sys_user_role ur
-        join sys_role r on r.id = ur.role_id
-        where ur.user_id = #{userId}
-        """)
-    List<String> selectRoleCodesByUserId(Long userId);
+    record Grant(String roleCode, String permCode, String appScope, Long appId) {
+    }
 }

@@ -54,6 +54,15 @@ export const useAuthStore = defineStore('auth', () => {
     return hasAuthority(authorities.value, required);
   }
 
+  function canAccessApp(permission: string, appId: number) {
+    const user = currentUser.value;
+    if (!user || !canAccess([permission])) return false;
+    return user.authorities.includes('SYSTEM_ADMIN')
+      || user.allAppPermissions?.includes(permission) === true
+      || user.applicationPermissions?.[permission]?.includes(appId) === true
+      || (user.allAppPermissions === undefined && user.applicationPermissions === undefined);
+  }
+
   return {
     token,
     currentUser,
@@ -64,5 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
     init,
     logout,
     canAccess,
+    canAccessApp,
+    fetchCurrentUser,
   };
 });

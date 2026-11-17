@@ -8,10 +8,10 @@
       <div class="toolbar-actions">
         <el-button @click="router.push('/pipeline/defs')">{{ t('common.back') }}</el-button>
         <el-button @click="loadAll">{{ t('common.refresh') }}</el-button>
-        <el-tooltip content="跳转到该应用的当前版本列表" placement="top">
+        <el-tooltip v-if="authStore.canAccess(['RELEASE_VIEW'])" content="跳转到该应用的当前版本列表" placement="top">
           <el-button @click="navigateToCurrentVersion" :disabled="!pipeline?.appId">查看当前版本</el-button>
         </el-tooltip>
-        <el-button type="primary" :disabled="!pipeline?.enabled" @click="runDialogVisible = true">
+        <el-button v-if="canRun" type="primary" :disabled="!pipeline?.enabled" @click="runDialogVisible = true">
           {{ t('common.runPipeline') }}
         </el-button>
       </div>
@@ -27,13 +27,13 @@
       <section class="content-panel">
         <div class="panel-header">
           <h3>{{ t('fields.stageName') }}</h3>
-          <el-button @click="openCreateStage">{{ t('common.createStage') }}</el-button>
+          <el-button v-if="canEdit" @click="openCreateStage">{{ t('common.createStage') }}</el-button>
         </div>
         <el-table :data="stages" v-loading="loading" highlight-current-row row-key="id" @current-change="selectStage">
           <el-table-column prop="stageOrder" :label="t('fields.stageOrder')" width="120" />
           <el-table-column prop="stageName" :label="t('fields.stageName')" min-width="160" />
           <el-table-column prop="timeoutSeconds" :label="t('fields.timeoutSeconds')" width="140" />
-          <el-table-column :label="t('common.actions')" fixed="right" width="160">
+          <el-table-column v-if="canEdit" :label="t('common.actions')" fixed="right" width="160">
             <template #default="{ row }">
               <el-button link type="primary" @click.stop="openEditStage(row)">{{ t('common.edit') }}</el-button>
               <el-button link type="danger" @click.stop="deleteStage(row)">{{ t('common.delete') }}</el-button>
@@ -45,7 +45,7 @@
       <section class="content-panel">
         <div class="panel-header">
           <h3>{{ t('fields.stepName') }}</h3>
-          <el-button :disabled="selectedStageId == null" @click="openCreateStep">{{ t('common.createStep') }}</el-button>
+          <el-button v-if="canEdit" :disabled="selectedStageId == null" @click="openCreateStep">{{ t('common.createStep') }}</el-button>
         </div>
         <el-table :data="steps" v-loading="stepLoading" row-key="id">
           <el-table-column prop="stepOrder" :label="t('fields.stepOrder')" width="110" />
@@ -53,7 +53,7 @@
           <el-table-column prop="executorType" :label="t('fields.executorType')" width="140" />
           <el-table-column prop="timeoutSeconds" :label="t('fields.timeoutSeconds')" width="130" />
           <el-table-column prop="continueOnFail" :label="t('fields.continueOnFail')" width="140" />
-          <el-table-column :label="t('common.actions')" fixed="right" width="160">
+          <el-table-column v-if="canEdit" :label="t('common.actions')" fixed="right" width="160">
             <template #default="{ row }">
               <el-button link type="primary" @click="openEditStep(row)">{{ t('common.edit') }}</el-button>
               <el-button link type="danger" @click="deleteStep(row)">{{ t('common.delete') }}</el-button>
@@ -132,6 +132,7 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { appApi } from '@/api/resource';
 import { getPipeline, pipelineStageApi, pipelineStepApi } from '@/api/pipeline';
 import PipelineRunDialog from './PipelineRunDialog.vue';
+import { useAuthStore } from '@/store/auth';
 
 interface StageForm {
   stageName: string;
@@ -155,6 +156,9 @@ const router = useRouter();
 const { t } = useI18n();
 const pipelineId = computed(() => Number(route.params.id));
 const pipeline = ref<Record<string, unknown> | null>(null);
+const authStore = useAuthStore();
+const canEdit = computed(() => authStore.canAccess(['SYSTEM_ADMIN']));
+const canRun = computed(() => pipeline.value && authStore.canAccessApp('PIPELINE_EXECUTE', Number(pipeline.value.appId)));
 const appDisplayName = ref('-');
 const stages = ref<Record<string, unknown>[]>([]);
 const steps = ref<Record<string, unknown>[]>([]);
