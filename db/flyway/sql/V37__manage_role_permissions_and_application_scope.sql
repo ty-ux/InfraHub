@@ -18,12 +18,12 @@ SELECT setval(pg_get_serial_sequence('sys_user_role', 'id'),
 
 INSERT INTO sys_permission (perm_code, perm_name, resource_type, action) VALUES
     ('PIPELINE_VIEW', '查看流水线及执行记录', 'PIPELINE', 'VIEW'),
-    ('PIPELINE_DEPLOY', '通过流水线部署', 'PIPELINE', 'DEPLOY'),
     ('RELEASE_VIEW', '查看发布与运行资源', 'RELEASE', 'VIEW'),
     ('RELEASE_CREATE', '创建发布单', 'RELEASE', 'CREATE'),
     ('RELEASE_CANCEL', '取消发布单', 'RELEASE', 'CANCEL'),
     ('ROLLBACK_VIEW', '查看回滚', 'ROLLBACK', 'VIEW'),
-    ('ROLLBACK_CREATE', '创建回滚单', 'ROLLBACK', 'CREATE')
+    ('ROLLBACK_CREATE', '创建回滚单', 'ROLLBACK', 'CREATE'),
+    ('APPROVAL_VIEW', '查看审批', 'APPROVAL', 'VIEW')
 ON CONFLICT (perm_code) DO NOTHING;
 
 UPDATE sys_permission SET perm_name = CASE perm_code
