@@ -26,9 +26,9 @@
 
 ### Docker Compose
 
-复制 `deploy/.env.example` 为仓库根目录的 `.env`。填写独立的 `POSTGRES_PASSWORD` 和至少 32 字节的随机 `JWT_SECRET`，然后执行 `docker compose up -d --build`。
+复制 `deploy/.env.example` 为仓库根目录的 `.env`。填写 `POSTGRES_PASSWORD`、至少 32 字节的随机 `JWT_SECRET` 和首次登录用的 `INFRAHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD`，然后执行 `docker compose up -d --build`。
 
-控制台默认监听 [localhost:8088](http://localhost:8088)。初始化包含一个本地演示管理员，对外部署前须先更改初始密码。
+控制台默认监听 [localhost:8088](http://localhost:8088)。首次用 `admin` 登录后，按页面提示修改密码。
 
 ### 本地开发
 

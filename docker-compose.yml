@@ -1,14 +1,14 @@
 # InfraHub - Docker Compose orchestration (PostgreSQL + backend + frontend)
 #
 # Usage:
-#   cp deploy/.env.example .env        (required; fill in both credentials)
+#   cp deploy/.env.example .env        (fill in the database, JWT and initial admin settings)
 #   docker compose up -d --build       (project name: use -p to fix isolation)
 #   docker compose down                (stop, keep the database volume)
 #   docker compose down -v             (stop AND delete the database volume)
 #
 # Security notes:
 #   - Set fresh credentials before running this Compose project.
-#     Supply POSTGRES_PASSWORD and JWT_SECRET via .env / host environment.
+#     Supply POSTGRES_PASSWORD, JWT_SECRET and the initial admin password via .env / host environment.
 #   - No real credentials, JWT keys or tokens are committed in this file.
 #   - The database is not published to the host by default. For local debugging
 #     only, expose it by adding to `postgres`:
@@ -64,11 +64,15 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-infrahub}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-infrahub}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
-      SPRING_FLYWAY_ENABLED: "false"
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
+      SPRING_FLYWAY_BASELINE_VERSION: "2"
+      MANAGEMENT_HEALTH_REDIS_ENABLED: "false"
       INFRAHUB_JWT_ISSUER: ${JWT_ISSUER:-infrahub}
       # LOCAL-DEVELOPMENT placeholder only; production MUST override JWT_SECRET.
       INFRAHUB_JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
       INFRAHUB_JWT_EXPIRE_SECONDS: ${JWT_EXPIRE_SECONDS:-7200}
+      INFRAHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD: ${INFRAHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD:-}
     ports:
       - "127.0.0.1:${BACKEND_PORT:-8080}:8080"
     healthcheck:

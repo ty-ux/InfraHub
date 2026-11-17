@@ -37,9 +37,10 @@ services:
       SPRING_DATASOURCE_URL: ${INFRAHUB_DB_URL:?必须设置 INFRAHUB_DB_URL（jdbc:postgresql://主机:端口/库名）}
       SPRING_DATASOURCE_USERNAME: ${INFRAHUB_DB_USERNAME:?必须设置 INFRAHUB_DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${INFRAHUB_DB_PASSWORD:?必须设置 INFRAHUB_DB_PASSWORD}
-      # 显式开启迁移闸门：既覆盖根编排的 false，也覆盖宿主机上可能残留的同名环境变量。
+      # 显式开启 Flyway，避免受宿主机上的同名环境变量影响。
       # 该值只决定"跑不跑 Flyway"，不改变 LegacyMissingMigrationGate 的启动前校验。
       SPRING_FLYWAY_ENABLED: "true"
+      MANAGEMENT_HEALTH_REDIS_ENABLED: "false"
       # 迁移策略：与 LegacyMissingMigrationGate 配套（见 db/flyway/README.md「缺失迁移例外与启动闸门」）。
       # "*:missing" 只放过"已应用但本地解析不到脚本"的迁移，实际范围由 allowlist 与启动闸门收窄；
       # 它不放宽校验和，也不允许跳过待执行迁移。
@@ -52,6 +53,7 @@ services:
       INFRAHUB_JWT_SECRET: ${INFRAHUB_JWT_SECRET:?必须设置 INFRAHUB_JWT_SECRET（至少 32 字节）}
       INFRAHUB_JWT_ISSUER: ${INFRAHUB_JWT_ISSUER:-infrahub}
       INFRAHUB_JWT_EXPIRE_SECONDS: ${INFRAHUB_JWT_EXPIRE_SECONDS:-7200}
+      INFRAHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD: ${INFRAHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD:-}
       # 与 SSH 单机实例互斥：容器内不启用任何自动采集，避免两个后端同时调度同一批目标
       INFRAHUB_MONITOR_COLLECTION_ENABLED: "false"
       INFRAHUB_MONITOR_COLLECTION_HOST_INSTANCE_ENABLED: "false"

@@ -47,6 +47,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -268,7 +269,8 @@ public class ReleaseRollbackOrderService extends ServiceImpl<ReleaseRollbackOrde
                         .map(service -> new RollbackChoice(service.getId(), service.getServiceName(), service.getAppId())).toList(),
                 releaseVersionService.listRollbackVersions().stream()
                         .map(version -> new RollbackVersionChoice(version.getId(), version.getVersionNo(),
-                                version.getAppId(), version.getBuildServiceId())).toList());
+                                version.getAppId(), version.getBuildServiceId(),
+                                version.getGitCommit(), version.getBuildPipelineRunId())).toList());
     }
 
     public List<RuntimeServiceInstance> applicationRollbackInstances(Long serviceId, Long envId) {
@@ -282,7 +284,8 @@ public class ReleaseRollbackOrderService extends ServiceImpl<ReleaseRollbackOrde
     public record RollbackChoice(Long id, String name, Long appId) {
     }
 
-    public record RollbackVersionChoice(Long id, String name, Long appId, Long serviceId) {
+    public record RollbackVersionChoice(Long id, String name, Long appId, Long serviceId,
+                                        String gitCommit, Long buildPipelineRunId) {
     }
 
     private ReleaseOrder resolveRollbackScope(ReleaseRollbackOrder rollback) {
@@ -306,6 +309,9 @@ public class ReleaseRollbackOrderService extends ServiceImpl<ReleaseRollbackOrde
             throw new BizException(ErrorCode.VALIDATION_ERROR, "所选实例已变更或不属于该应用环境，请刷新后重试");
         }
         for (RuntimeServiceInstance instance : selected) {
+            if (Objects.equals(instance.getVersionId(), rollback.getToVersionId())) {
+                throw new BizException(ErrorCode.VALIDATION_ERROR, "所选实例已在目标版本，请刷新并重新选择实例");
+            }
             if (instance.getHostId() != null && instances.stream().filter(candidate -> instance.getHostId().equals(candidate.getHostId())).count() > 1) {
                 throw new BizException(ErrorCode.VALIDATION_ERROR, "同一主机上的实例共享部署配置，无法安全地按实例回滚");
             }
