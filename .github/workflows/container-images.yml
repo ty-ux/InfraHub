@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/container-images.yml'
       - '.dockerignore'
+      - 'LICENSE'
       - 'pom.xml'
       - 'infrahub-*/**'
       - 'db/bootstrap/**'
@@ -81,6 +82,9 @@ jobs:
           }
           trap cleanup EXIT
           "${compose[@]}" up --detach --no-build --wait --wait-timeout 180
+          for service in backend frontend; do
+            "${compose[@]}" exec -T "$service" cat /usr/share/licenses/infrahub/LICENSE | cmp - LICENSE
+          done
           curl --fail --silent --show-error http://127.0.0.1:8088/ --output /tmp/infrahub-index.html
           grep --quiet '<div id="app"></div>' /tmp/infrahub-index.html
           curl --fail --silent --show-error http://127.0.0.1:8088/actuator/health | jq -e '.status == "UP"'

@@ -19,8 +19,11 @@ RUN npm run build
 # ---------- Stage 2: Run ----------
 FROM nginx:1.27-alpine
 
+LABEL org.opencontainers.image.licenses="MIT"
+
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /build/infrahub-console/dist /usr/share/nginx/html
+COPY LICENSE /usr/share/licenses/infrahub/LICENSE
 
 EXPOSE 80
 

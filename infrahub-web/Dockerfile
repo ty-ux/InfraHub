@@ -64,6 +64,8 @@ RUN mvn -B -pl infrahub-web -am package -DskipTests
 # ---------- Stage 2: Run ----------
 FROM eclipse-temurin:17-jre-jammy
 
+LABEL org.opencontainers.image.licenses="MIT"
+
 # curl for the container health check against /actuator/health.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
@@ -74,6 +76,7 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY --from=builder /build/infrahub-web/target/infrahub-web-1.0.0-SNAPSHOT.jar /app/app.jar
+COPY LICENSE /usr/share/licenses/infrahub/LICENSE
 
 USER infrahub
 
