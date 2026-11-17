@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 548" width="920" height="548" lang="zh-CN">
+  <title>InfraHub 整体架构</title>
+  <desc>Vue 控制台通过 HTTP 或 HTTPS 调用 Spring Boot 后端。后端读写 PostgreSQL，执行器拉取 Git 源码、推送镜像、部署到目标主机。目标主机从仓库拉取镜像，探测结果返回平台。</desc>
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0V20" fill="none" stroke="#e8edf3" stroke-width="1"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="m0 0 10 5-10 5Z" fill="#526781"/>
+    </marker>
+  </defs>
+  <style>
+    text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#182435}
+    .name{font-size:21px;font-weight:700}
+    .detail{font-size:15px;fill:#47566b}
+    .label{font-size:15px;fill:#3b506b;paint-order:stroke;stroke:#f8fafc;stroke-width:7px;stroke-linejoin:round}
+    .node{fill:#fcfdff;stroke:#a4b5c9;stroke-width:1.5}
+    .line{fill:none;stroke:#526781;stroke-width:2;marker-end:url(#arrow)}
+    .feedback{stroke-dasharray:6 5}
+    .icon{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  </style>
+
+  <rect width="920" height="548" fill="#f8fafc"/>
+  <rect width="920" height="548" fill="url(#grid)"/>
+  <g aria-hidden="true">
+    <path class="line" d="M460 114V189"/>
+    <path class="line" d="M278 262H208"/>
+    <path class="line" d="M721 234H645"/>
+    <path class="line" d="M642 282H809V346"/>
+    <path class="line" d="M809 442V479H643"/>
+    <path class="line" d="M382 330V405"/>
+    <path class="line feedback" d="M538 405V330"/>
+  </g>
+
+  <g>
+    <rect class="node" x="289" y="30" width="342" height="84" rx="10"/>
+    <g class="icon" color="#526781" transform="translate(314 49)">
+      <rect width="39" height="27" rx="3"/><path d="M19.5 27v9m-10 0h20M0 7h39"/>
+    </g>
+    <text class="name" x="376" y="66">Vue 3 控制台</text>
+    <text class="detail" x="376" y="91">应用配置、流水线、发布回滚</text>
+    <text class="label" x="474" y="157">HTTP(S) / API</text>
+  </g>
+
+  <g>
+    <rect x="280" y="190" width="362" height="140" rx="11" fill="#1a2839"/>
+    <text class="name" x="304" y="226" style="fill:#f8fafc">InfraHub 后端</text>
+    <text x="618" y="226" text-anchor="end" font-size="15" style="fill:#d0deed">Spring Boot</text>
+    <rect x="304" y="250" width="144" height="55" rx="6" fill="#26394e" stroke="#62758d"/>
+    <rect x="471" y="250" width="147" height="55" rx="6" fill="#26394e" stroke="#62758d"/>
+    <text x="376" y="284" text-anchor="middle" font-size="16" style="fill:#f8fafc">配置、权限与审计</text>
+    <text x="544" y="284" text-anchor="middle" font-size="16" style="fill:#f8fafc">流水线与执行器</text>
+  </g>
+
+  <g>
+    <path class="node" d="M27 222c0-19 180-19 180 0v76c0 19-180 19-180 0Z"/>
+    <ellipse class="node" cx="117" cy="222" rx="90" ry="14"/>
+    <path d="M27 240c0 19 180 19 180 0" fill="none" stroke="#c7d3e1"/>
+    <text class="name" x="117" y="275" text-anchor="middle">PostgreSQL</text>
+    <text class="detail" x="117" y="298" text-anchor="middle">平台数据与版本记录</text>
+    <text class="label" x="243" y="251" text-anchor="middle">读写</text>
+  </g>
+
+  <g>
+    <rect class="node" x="722" y="192" width="173" height="82" rx="9"/>
+    <g class="icon" color="#526781" transform="translate(740 210)">
+      <circle cx="5" cy="5" r="4"/><circle cx="5" cy="27" r="4"/><circle cx="23" cy="8" r="4"/><path d="M5 9v14m0-5h7a11 11 0 0 0 11-6"/>
+    </g>
+    <text class="name" x="778" y="225">Git 仓库</text>
+    <text class="detail" x="778" y="249">项目源码</text>
+    <text class="label" x="681" y="222" text-anchor="middle">拉取</text>
+  </g>
+
+  <g>
+    <rect class="node" x="722" y="347" width="173" height="94" rx="9"/>
+    <g class="icon" color="#526781" transform="translate(740 370)">
+      <path d="m0 9 13-8 13 8v15l-13 8-13-8zM0 9l13 8 13-8M13 17v15"/>
+    </g>
+    <text class="name" x="778" y="382">镜像仓库</text>
+    <text class="detail" x="778" y="409">前端与后端镜像</text>
+    <text class="label" x="772" y="304">推送镜像</text>
+    <text class="label" x="728" y="499">按摘要拉取</text>
+  </g>
+
+  <g>
+    <rect x="280" y="406" width="360" height="111" rx="10" fill="#fff3df" stroke="#b98745" stroke-width="1.5"/>
+    <text class="name" x="304" y="438">目标主机</text>
+    <text class="detail" x="616" y="438" text-anchor="end">Docker Compose</text>
+    <rect x="304" y="454" width="145" height="42" rx="5" fill="#fcfdff" stroke="#d4b183"/>
+    <rect x="471" y="454" width="145" height="42" rx="5" fill="#fcfdff" stroke="#d4b183"/>
+    <text x="376" y="481" text-anchor="middle" font-size="16">前端容器</text>
+    <text x="544" y="481" text-anchor="middle" font-size="16">后端容器</text>
+    <text class="label" x="365" y="370" text-anchor="end">SSH 部署</text>
+    <text class="label" x="553" y="370">状态与健康探测</text>
+  </g>
+</svg>

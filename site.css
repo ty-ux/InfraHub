@@ -1,5 +1,5 @@
 /* Hallmark · shape: product feature ledger · genre: modern-minimal · theme: Cobalt (deal 3/3) · job: try
- * hero: editorial split · nav: document tree · footer: ruled · imagery: real console · signature: linked architecture and delivery maps */
+ * hero: documentation overview · nav: document tree · footer: ruled · imagery: real console · signature: vector architecture and delivery diagrams */
 /* Hallmark · pre-emit critique: tight mobile reading order, reserved media space, one accent with strong contrast. */
 :root {
   color-scheme: light;
@@ -21,7 +21,6 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html, body { overflow-x: clip; }
 body, h1, h2, h3, p, figure { margin: 0; }
 a { color: inherit; }
 a:hover { color: var(--accent-deep); }
@@ -52,7 +51,7 @@ h1, h2 { text-wrap: balance; }
   gap: .5rem 1rem;
 }
 .masthead { min-height: 4.25rem; padding-block: .55rem; }
-.brand, .masthead nav, .actions {
+.brand, .masthead nav {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -72,21 +71,20 @@ h1, h2 { text-wrap: balance; }
 .masthead nav a:hover { text-decoration: underline; text-underline-offset: .27em; }
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.26fr) minmax(0, 1fr);
-  align-items: end;
-  gap: 2.4rem 3rem;
-  padding-block: clamp(2.5rem, 5vw, 4.8rem) clamp(2rem, 4.5vw, 4rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  padding-block: .5rem 1.8rem;
 }
 .hero h1 {
-  font-size: clamp(2.15rem, 1.1rem + 3.4vw, 4.5rem);
+  font-size: clamp(2.4rem, 1.4rem + 3vw, 4.4rem);
   font-weight: 750;
-  line-height: 1.14;
-  letter-spacing: -.063em;
+  line-height: 1.08;
+  letter-spacing: -.06em;
 }
-.hero-intro { max-width: 28rem; padding-bottom: .25rem; }
-.hero-intro p { color: var(--muted); font-size: 1.08rem; line-height: 1.85; }
-.actions { gap: .65rem 1.1rem; margin-top: 1.2rem; }
+.hero p { margin-block-start: .6rem; color: var(--muted); }
 .button {
   display: inline-flex;
   align-items: center;
@@ -99,7 +97,6 @@ h1, h2 { text-wrap: balance; }
 }
 .primary { background: var(--accent); color: var(--surface); border-color: var(--accent); }
 .primary:hover, .primary:active { background: var(--accent-deep); color: var(--surface); }
-.source-link { font-size: .94rem; font-weight: 600; text-underline-offset: .23em; }
 
 .preview {
   margin-top: 1.25rem;
@@ -126,7 +123,7 @@ h1, h2 { text-wrap: balance; }
 }
 
 .features, .deployment, .overview {
-  padding-block: clamp(2rem, 4.5vw, 4rem);
+  padding-block: clamp(1.6rem, 3vw, 2.8rem);
   border-top: 1px solid var(--line);
 }
 h2 {
@@ -137,7 +134,7 @@ h2 {
   letter-spacing: -.048em;
 }
 h3 { font-size: 1.06rem; margin-bottom: .38rem; }
-.overview > p, .features > p, .setup p, .deployment-intro { color: var(--muted); }
+.setup p, .deployment-intro { color: var(--muted); }
 .setup {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -165,85 +162,38 @@ code, pre { font-family: var(--font-mono); }
   color: var(--muted);
 }
 
-.diagram {
-  margin-block-start: 1.3rem;
+.technical-figure {
   border: 1px solid var(--line);
   border-radius: .6rem;
   background: var(--surface);
 }
-.architecture-core {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 2.5rem minmax(0, 1.28fr) 2.5rem minmax(0, 1fr);
-  align-items: stretch;
-  padding: 1.25rem;
+.diagram-scroll {
+  overflow-x: auto;
+  border-radius: .6rem .6rem 0 0;
 }
-.diagram-node {
-  display: grid;
-  align-content: center;
-  gap: .2rem;
-  min-height: 6.7rem;
-  padding: .85rem 1rem;
-  border: 1px solid var(--line);
-  border-radius: .35rem;
+.diagram-scroll img {
+  display: block;
+  inline-size: 100%;
+  min-inline-size: 42rem;
+  block-size: auto;
 }
-.diagram-node > strong { font-size: 1.03rem; }
-.diagram-node > span { font-family: var(--font-mono); font-size: .9rem; }
-.diagram-node a, .diagram-node small { font-size: .83rem; }
-.diagram-node a { width: fit-content; text-underline-offset: .2em; }
-.core-node { background: var(--terminal); color: var(--terminal-ink); border-color: var(--terminal); }
-.connector {
-  position: relative;
-  align-self: center;
-  border-top: 1px solid var(--accent);
-}
-.connector::after, .delivery-flow li:not(:last-child)::after {
-  position: absolute;
-  width: .42rem;
-  height: .42rem;
-  border: solid var(--accent);
-  border-width: 1px 1px 0 0;
-  transform: rotate(45deg);
-  content: "";
-}
-.connector::after { inset: -.235rem .43rem auto auto; }
-.architecture-dependencies {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.technical-figure figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .35rem 1rem;
+  padding: .55rem .9rem;
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: .87rem;
 }
-.architecture-dependencies p { padding: .8rem 1.25rem; }
-.architecture-dependencies p + p { border-inline-start: 1px solid var(--line); }
-.architecture-dependencies strong { color: var(--ink); }
-.delivery-flow {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.3rem;
-  margin: 0;
-  padding: 1.25rem;
-  list-style: none;
-  counter-reset: flow;
+.technical-figure figcaption a { margin-inline-start: auto; text-underline-offset: .23em; }
+.diagram-hint { display: none; }
+
+@container home (width < 42rem) {
+  .diagram-hint { display: inline; }
 }
-.delivery-flow li { position: relative; counter-increment: flow; }
-.delivery-flow li:not(:last-child)::after { inset: calc(50% - .2rem) -.82rem auto auto; }
-.delivery-flow a {
-  display: grid;
-  align-content: start;
-  min-height: 100%;
-  padding: .65rem .8rem;
-  border: 1px solid var(--line);
-  border-radius: .35rem;
-  text-decoration: none;
-}
-.delivery-flow a::before { content: counter(flow, decimal-leading-zero); color: var(--accent); font: .9rem/1.4 var(--font-mono); }
-.delivery-flow a:hover { border-color: var(--accent); }
-.delivery-flow a:hover strong { text-decoration: underline; }
-.delivery-flow strong { margin-top: .28rem; }
-.delivery-flow a span, .flow-outcomes { color: var(--muted); font-size: .87rem; }
-.flow-outcomes { display: grid; gap: .4rem; border-top: 1px solid var(--line); padding: .8rem 1.25rem; }
-.flow-outcomes a { color: var(--accent-deep); text-underline-offset: .2em; }
-.flow-outcomes span { margin-inline: .2rem; }
+
 .directory {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -276,6 +226,7 @@ code, pre { font-family: var(--font-mono); }
 .guide-nav h2 { font-size: 1rem; margin: 0 0 .7rem; letter-spacing: 0; }
 .guide-tree, .guide-tree ul, .breadcrumb ol { padding: 0; margin: 0; list-style: none; }
 .guide-branch + .guide-branch { border-top: 1px solid var(--line); }
+.guide-home { margin-block-end: .55rem; font-weight: 650; }
 .branch-heading { display: flex; align-items: center; justify-content: space-between; }
 .guide-tree a {
   display: block;
@@ -314,6 +265,7 @@ code, pre { font-family: var(--font-mono); }
 .branch-toggle:hover, .guide-menu:hover { color: var(--accent); }
 .guide-menu { display: none; }
 .guide-main { min-width: 0; }
+.home-main { min-inline-size: 0; container: home / inline-size; }
 .breadcrumb ol { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .5rem; color: var(--muted); font-size: .88rem; }
 .breadcrumb li + li::before { content: "/"; margin-inline-end: .5rem; }
 .breadcrumb a { text-underline-offset: .2em; }
@@ -334,8 +286,6 @@ code, pre { font-family: var(--font-mono); }
 .guide-main article li::marker { color: var(--accent); font-weight: 650; }
 
 @media (max-width: 49rem) {
-  .hero { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
-  .hero-intro { max-width: none; }
   .setup, .directory { grid-template-columns: minmax(0, 1fr); }
   .guide-layout { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   .guide-aside { position: static; }
@@ -354,12 +304,9 @@ code, pre { font-family: var(--font-mono); }
   .guide-menu:not([hidden]) + .guide-nav > h2 { display: none; }
 }
 
-@media (max-width: 40rem) {
-  .architecture-core, .architecture-dependencies, .delivery-flow { grid-template-columns: minmax(0, 1fr); }
-  .connector { height: 1.2rem; justify-self: center; border-top: 0; border-inline-start: 1px solid var(--accent); }
-  .connector::after { inset: auto auto .25rem -.235rem; transform: rotate(135deg); }
-  .architecture-dependencies p + p { border-inline-start: 0; border-top: 1px solid var(--line); }
-  .delivery-flow li:not(:last-child)::after { inset: auto 50% -.8rem auto; transform: rotate(135deg); }
+@media (pointer: coarse) {
+  .guide-menu:not([hidden]), .guide-tree a, .branch-toggle:not([hidden]) { min-block-size: 44px; }
+  .branch-toggle:not([hidden]) { flex-basis: 44px; }
 }
 
 @media (forced-colors: active) {
