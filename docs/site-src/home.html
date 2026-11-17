@@ -1,78 +1,43 @@
-<main id="main">
-  <section class="shell hero" aria-labelledby="intro-title">
-    <h1 id="intro-title">从代码构建，<br>到按版本回滚。</h1>
-    <div class="hero-intro">
-      <p>InfraHub 是一个可自部署的交付与运维平台。在同一个控制台配置流水线、查看部署日志和实例状态，并在需要时恢复到历史版本。</p>
-      <div class="actions">
-        <a class="button primary" href="#guide">浏览使用指南 <span aria-hidden="true">↓</span></a>
-        <a class="source-link" href="#deploy">开始部署</a>
-      </div>
+<main id="main" class="home-main" tabindex="-1">
+  <section class="hero" aria-labelledby="intro-title">
+    <div>
+      <h1 id="intro-title">InfraHub</h1>
+      <p>一个可自部署的应用交付与基础设施管理平台。</p>
     </div>
+    <a class="button primary" href="#deploy">开始部署 <span aria-hidden="true">↓</span></a>
   </section>
 
-  <section class="shell overview" id="architecture" aria-labelledby="architecture-title">
+  <section class="overview" id="architecture" aria-labelledby="architecture-title">
     <h2 id="architecture-title">整体架构</h2>
-    <p>控制台发起操作，平台后端记录执行过程，部署执行端把版本交付到目标环境。</p>
-    <figure class="diagram architecture">
-      <div class="architecture-core">
-        <div class="diagram-node">
-          <strong>操作入口</strong>
-          <span>Vue 3 控制台</span>
-          <a href="./workspace/index.html">工作台</a>
-        </div>
-        <span class="connector" aria-hidden="true"></span>
-        <div class="diagram-node core-node">
-          <strong>InfraHub 后端</strong>
-          <span>Spring Boot API</span>
-          <small>流水线、资源配置、权限与审计</small>
-        </div>
-        <span class="connector" aria-hidden="true"></span>
-        <div class="diagram-node">
-          <strong>执行与运行</strong>
-          <span>执行器 → 目标环境</span>
-          <small>主机、容器与健康检查</small>
-        </div>
+    <figure class="technical-figure">
+      <div class="diagram-scroll" tabindex="0" role="region" aria-label="整体架构图，可横向滚动">
+        <img src="./assets/architecture.svg" width="920" height="548" fetchpriority="high"
+          alt="Vue 控制台调用 InfraHub 后端。后端读写 PostgreSQL，执行器从 Git 拉取代码、向镜像仓库推送镜像并通过 SSH 部署。目标主机拉取镜像，状态与健康探测反馈给后端。">
       </div>
-      <div class="architecture-dependencies">
-        <p><strong>平台数据</strong><br>后端将应用、配置、运行和审计等记录保存到 PostgreSQL。</p>
-        <p><strong>代码与制品</strong><br>执行阶段拉取 Git 源码。Compose 流水线推送镜像到镜像仓库，并登记部署清单与版本。</p>
-        <p><strong>运行状态</strong><br>实例探测和监控采集运行状态，供控制台查看健康与异常。</p>
-      </div>
+      <figcaption><span class="diagram-hint">横向滑动查看完整图</span><a href="./assets/architecture.svg">打开架构原图 <span aria-hidden="true">↗</span></a></figcaption>
     </figure>
   </section>
 
-  <section class="shell overview" id="flow" aria-labelledby="flow-title">
-    <h2 id="flow-title">发布与回滚流程</h2>
-    <p>以 Compose 项目的联合交付为例，点击流程节点可打开对应的操作说明。</p>
-    <figure class="diagram">
-      <ol class="delivery-flow">
-        <li><a href="./resources/index.html"><strong>准备资源</strong><span>登记应用、服务和环境</span></a></li>
-        <li><a href="./delivery/pipelines/index.html"><strong>配置流水线</strong><span>设置仓库与部署阶段</span></a></li>
-        <li><a href="./delivery/runs/index.html"><strong>构建并部署</strong><span>推送镜像、部署、验收</span></a></li>
-        <li><a href="./delivery/current-versions/index.html"><strong>确认当前版本</strong><span>核对目标实例和运行状态</span></a></li>
-      </ol>
-      <div class="flow-outcomes">
-        <p><strong>上线后出现异常</strong> <span aria-hidden="true">→</span> <a href="./delivery/rollback/index.html">选择历史版本并回滚实例</a> <span aria-hidden="true">→</span> <a href="./monitoring/health-checks/index.html">重新检查健康状态</a></p>
-        <p><strong>执行结果无法确认</strong> <span aria-hidden="true">→</span> <a href="./governance/unknown-executions/index.html">先核查实际状态与版本</a></p>
+  <section class="overview" id="flow" aria-labelledby="flow-title">
+    <h2 id="flow-title">发布与回滚流程图</h2>
+    <figure class="technical-figure">
+      <div class="diagram-scroll" tabindex="0" role="region" aria-label="发布与回滚流程图，可横向滚动">
+        <img src="./assets/delivery-flow.svg" width="920" height="756" loading="lazy"
+          alt="配置流水线后构建并推送镜像、登记版本和制品，再部署到目标环境。成功时核对当前版本，失败时定位原因，未知时先核实现场。确认需要恢复时选择历史版本与实例回滚，完成后重新验收。">
       </div>
+      <figcaption><span class="diagram-hint">横向滑动查看完整图</span><a href="./assets/delivery-flow.svg">打开流程原图 <span aria-hidden="true">↗</span></a></figcaption>
     </figure>
   </section>
 
-  <section class="shell features" id="features" aria-labelledby="features-title">
+  <section class="features" id="features" aria-labelledby="features-title">
     <h2 id="features-title">流水线执行界面</h2>
-    <p>按阶段查看状态与完整步骤日志，也可以打开整次运行的汇总日志。</p>
     <figure class="preview">
       <img src="./assets/pipeline.webp" width="1440" height="650" loading="lazy" alt="InfraHub 控制台的流水线执行详情，显示阶段状态、步骤耗时以及健康检查日志">
       <figcaption><span>控制台截图 · 示例数据</span><a href="./assets/pipeline.webp">查看大图 <span aria-hidden="true">↗</span></a></figcaption>
     </figure>
   </section>
 
-  <section class="shell overview" id="guide" aria-labelledby="guide-title">
-    <h2 id="guide-title">使用指南</h2>
-    <!-- guide-index -->
-  </section>
-
-  <section class="shell deployment" id="deploy" aria-labelledby="deploy-title">
+  <section class="deployment" id="deploy" aria-labelledby="deploy-title">
     <h2 id="deploy-title">用 Docker Compose 部署</h2>
     <p class="deployment-intro">准备 Git 和 Docker Compose v2。下面的步骤从仓库源码构建镜像。</p>
     <ol class="setup">

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 756" width="920" height="756" lang="zh-CN">
+  <title>InfraHub 发布与回滚流程图</title>
+  <desc>配置应用和流水线，拉取代码、构建并推送镜像，登记版本和制品，再部署到目标环境并检查结果。成功后核对当前版本。失败时查日志和实际部署状态，结果未知时先核实现场。确认需要恢复时，选择历史版本和实例回滚，随后重新验收。</desc>
+  <defs>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0V20" fill="none" stroke="#e8edf3" stroke-width="1"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="m0 0 10 5-10 5Z" fill="#526781"/>
+    </marker>
+    <marker id="rollback-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="m0 0 10 5-10 5Z" fill="#86510b"/>
+    </marker>
+  </defs>
+  <style>
+    text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;text-anchor:middle;fill:#182435}
+    .name{font-size:20px;font-weight:700}
+    .detail{font-size:15px;fill:#47566b}
+    .label{font-size:16px;font-weight:650;paint-order:stroke;stroke:#f8fafc;stroke-width:8px;stroke-linejoin:round}
+    .node{fill:#fcfdff;stroke:#a4b5c9;stroke-width:1.5}
+    .line{fill:none;stroke:#526781;stroke-width:2;marker-end:url(#arrow)}
+    .restore{fill:none;stroke:#86510b;stroke-width:2;stroke-dasharray:6 5;marker-end:url(#rollback-arrow)}
+  </style>
+
+  <rect width="920" height="756" fill="#f8fafc"/>
+  <rect width="920" height="756" fill="url(#grid)"/>
+  <g aria-hidden="true">
+    <path class="line" d="M154 64V105"/>
+    <path class="line" d="M280 142H332"/>
+    <path class="line" d="M586 142H638"/>
+    <path class="line" d="M766 179V201H460V225"/>
+    <path class="line" d="M460 292V322"/>
+    <path class="line" d="M310 379H154V479"/>
+    <path class="line" d="M460 437V479"/>
+    <path class="line" d="M609 379H766V479"/>
+    <path class="restore" d="M154 555V638H307"/>
+    <path class="restore" d="M766 555V638H613"/>
+    <path class="line" d="M460 671V695"/>
+  </g>
+
+  <rect x="94" y="22" width="120" height="42" rx="21" fill="#1a2839"/>
+  <text x="154" y="49" font-size="17" style="fill:#f8fafc">开始</text>
+
+  <rect class="node" x="28" y="106" width="252" height="73" rx="8"/>
+  <text class="name" x="154" y="138">配置流水线</text>
+  <text class="detail" x="154" y="161">选择应用、服务和环境</text>
+  <rect class="node" x="334" y="106" width="252" height="73" rx="8"/>
+  <text class="name" x="460" y="138">构建并推送镜像</text>
+  <text class="detail" x="460" y="161">拉取源码、构建前后端</text>
+  <rect class="node" x="640" y="106" width="252" height="73" rx="8"/>
+  <text class="name" x="766" y="138">登记版本和制品</text>
+  <text class="detail" x="766" y="161">生成引用镜像摘要的 Compose 清单</text>
+
+  <rect class="node" x="306" y="227" width="308" height="65" rx="8"/>
+  <text class="name" x="460" y="255">部署至目标环境</text>
+  <text class="detail" x="460" y="278">启动服务并执行已配置的健康检查</text>
+
+  <path d="m460 323 150 56-150 58-150-58z" fill="#fff0d9" stroke="#ac7635" stroke-width="2"/>
+  <text class="name" x="460" y="387">执行结果？</text>
+  <text class="label" x="218" y="374" style="fill:#22664d">成功</text>
+  <text class="label" x="460" y="454" style="fill:#725014">未知</text>
+  <text class="label" x="713" y="374" style="fill:#913d35">失败</text>
+
+  <rect x="28" y="480" width="252" height="75" rx="8" fill="#ebf6ef" stroke="#70a890" stroke-width="1.5"/>
+  <text class="name" x="154" y="512">核对当前版本</text>
+  <text class="detail" x="154" y="536">确认各实例与健康状态</text>
+  <rect class="node" x="334" y="480" width="252" height="75" rx="8"/>
+  <text class="name" x="460" y="512">核实实际结果</text>
+  <text class="detail" x="460" y="536">核对目标实例和部署记录</text>
+  <rect x="640" y="480" width="252" height="75" rx="8" fill="#fdf0ee" stroke="#c88b82" stroke-width="1.5"/>
+  <text class="name" x="766" y="512">定位失败原因</text>
+  <text class="detail" x="766" y="536">查看阶段日志与变更范围</text>
+
+  <text class="label" x="218" y="628" style="fill:#86510b">上线后异常</text>
+  <text class="label" x="704" y="628" style="fill:#86510b">确认需恢复</text>
+  <rect x="308" y="604" width="304" height="67" rx="8" fill="#fff0d9" stroke="#ac7635" stroke-width="1.5"/>
+  <text class="name" x="460" y="632">应用回滚</text>
+  <text class="detail" x="460" y="656">选择历史版本与目标实例</text>
+  <rect x="319" y="696" width="282" height="42" rx="21" fill="#1a2839"/>
+  <text x="460" y="723" font-size="17" style="fill:#f8fafc">重新验收健康与当前版本</text>
+</svg>

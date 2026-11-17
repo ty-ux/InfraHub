@@ -1,5 +1,14 @@
 const directoryButton = document.querySelector('.guide-menu');
 directoryButton.hidden = false;
+function openDirectoryFromLink() {
+  if (location.hash === '#guide') directoryButton.setAttribute('aria-expanded', 'true');
+}
+
+openDirectoryFromLink();
+window.addEventListener('hashchange', openDirectoryFromLink);
+document.querySelector('.masthead a[href="#guide"]').addEventListener('click', () => {
+  directoryButton.setAttribute('aria-expanded', 'true');
+});
 directoryButton.addEventListener('click', () => {
   const expanded = directoryButton.getAttribute('aria-expanded') === 'true';
   directoryButton.setAttribute('aria-expanded', String(!expanded));
