@@ -72,3 +72,4 @@ npm run dev
 
 - [Docker Compose 测试部署](docker-compose.infrahub-test.yml)
 - [数据库初始化与迁移](db/flyway/README.md)
+- [贡献指南](CONTRIBUTING.md) · [社区行为准则](CODE_OF_CONDUCT.md) · [安全政策](SECURITY.md)

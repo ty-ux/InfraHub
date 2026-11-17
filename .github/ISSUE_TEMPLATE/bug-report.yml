@@ -1,0 +1,47 @@
+name: 故障报告
+description: 反馈可复现的运行、部署或界面故障
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Issue 内容公开。请先脱敏日志和截图，避免上传密码、令牌、私钥、连接串或内网地址。
+        安全漏洞请通过 [私密漏洞报告](https://github.com/ty-ux/InfraHub/security/advisories/new) 提交。
+  - type: input
+    id: version
+    attributes:
+      label: InfraHub 版本
+      description: 填写 Git 提交、发布版本或前后端镜像标签
+      placeholder: sha-… 或 v…
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: 部署方式
+      options:
+        - Docker Compose（预构建镜像）
+        - Docker Compose（源码构建）
+        - 单独运行 Docker 容器
+        - 本地源码或 JAR
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 复现步骤
+      description: 从哪个页面或命令开始，依次做了哪些操作？
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: 预期与实际结果
+      description: 你期望看到什么，实际发生了什么？
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 环境与脱敏日志
+      description: 可附操作系统、Docker Compose 版本、报错日志或截图
