@@ -19,30 +19,35 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { menuGroupTitles } from '@/router/navigation';
-import { appRoutes } from '@/router/routes';
+import { menuRoutes } from '@/router/routes';
 import { useAuthStore } from '@/store/auth';
+import { useMenuLayoutStore } from '@/store/menuLayout';
 
 const route = useRoute();
 const authStore = useAuthStore();
+const menu = useMenuLayoutStore();
 const { t } = useI18n();
 
 const activeMenuPath = computed(() => route.meta.activeMenuPath ?? route.path);
 
 const menuGroups = computed(() =>
-  Object.entries(menuGroupTitles)
-    .map(([key, title]) => ({
+  menu.layout.groupOrder
+    .map((key) => ({
       key,
-      titleKey: title,
-      items: appRoutes
-        .filter((item) => !item.meta.hidden && item.meta.group === key && authStore.canAccess(item.meta.authorities))
-        .sort((a, b) => (a.meta.order || 0) - (b.meta.order || 0)),
+      titleKey: menuGroupTitles[key],
+      items: menu.layout.entries
+        .filter((entry) => entry.visible && entry.group === key)
+        .map((entry) => menuRoutes.get(entry.path))
+        .filter((item) => item && authStore.canAccess(item.meta.authorities)),
     }))
     .filter((group) => group.items.length > 0),
 );
+
+onMounted(() => { void menu.load().catch(() => {}); });
 </script>
 
 <style scoped lang="scss">

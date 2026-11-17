@@ -49,10 +49,12 @@ import { useAuthStore } from '@/store/auth';
 import { useTheme } from '@/composables/useTheme';
 import { setLocale as applyLocale } from '@/i18n';
 import { menuGroupTitles } from '@/router/navigation';
+import { useMenuLayoutStore } from '@/store/menuLayout';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const menu = useMenuLayoutStore();
 const { t, locale } = useI18n();
 const currentLocale = locale;
 const { theme, toggleTheme } = useTheme();
@@ -63,7 +65,8 @@ const pageTitle = computed(() => {
 });
 
 const groupTitle = computed(() => {
-  const group = route.meta.group;
+  const path = route.meta.activeMenuPath ?? route.path;
+  const group = menu.layout.entries.find((entry) => entry.path === path)?.group ?? route.meta.group;
   return group ? t(menuGroupTitles[group]) : '';
 });
 

@@ -22,6 +22,7 @@ import {
   Lock,
   Management,
   MapLocation,
+  Menu,
   Notebook,
   Notification,
   Platform,
@@ -37,6 +38,7 @@ import {
 import type { AppRouteMeta } from '@/types/layout';
 import MainLayoutClean from '@/layout/MainLayoutClean.vue';
 import ConfiguredPageView from '@/views/common/ConfiguredPageView.vue';
+import { menuGroupsInDefaultOrder, menuLayoutPath, type MenuLayout } from './navigation';
 
 type AppRouteRecord = RouteRecordRaw & { meta: AppRouteMeta };
 
@@ -218,6 +220,11 @@ export const appRoutes: AppRouteRecord[] = [
     meta: { title: 'routes.auditLogs', group: 'system', order: 55, icon: Notebook, authorities: ['SYSTEM_ADMIN'] },
   },
   {
+    path: menuLayoutPath,
+    component: () => import('@/views/system/MenuLayoutView.vue'),
+    meta: { title: 'routes.menuLayout', group: 'system', order: 54, icon: Menu, authorities: ['SYSTEM_ADMIN'] },
+  },
+  {
     path: '/system/approvals',
     component: () => import('@/views/system/ApprovalCenterView.vue'),
     meta: { title: 'routes.approvals', group: 'governance', order: 40, icon: CircleCheck, authorities: ['SYSTEM_ADMIN', 'APPROVAL_VIEW'] },
@@ -238,6 +245,20 @@ export const appRoutes: AppRouteRecord[] = [
     meta: { title: 'routes.executorConfigs', group: 'config', order: 23, icon: Tools, authorities: ['SYSTEM_ADMIN'] },
   },
 ];
+
+export const menuRoutes = new Map(
+  appRoutes.filter(({ meta }) => meta.group && !meta.hidden).map((route) => [route.path, route]),
+);
+
+export const defaultMenuLayout: MenuLayout = {
+  groupOrder: menuGroupsInDefaultOrder,
+  entries: menuGroupsInDefaultOrder.flatMap((group) =>
+    [...menuRoutes.values()]
+      .filter(({ meta }) => meta.group === group)
+      .sort((a, b) => (a.meta.order ?? 0) - (b.meta.order ?? 0))
+      .map(({ path }) => ({ path, group, visible: true })),
+  ),
+};
 
 export const routes: RouteRecordRaw[] = [
   {

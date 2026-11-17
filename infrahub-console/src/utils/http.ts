@@ -5,6 +5,12 @@ import type { ApiResponse } from '@/types/api';
 import { clearAuthStorage, getToken } from './token';
 import { unwrapApiResponse } from './response';
 
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    silent?: boolean;
+  }
+}
+
 const http = axios.create({
   baseURL: '/',
   timeout: 30000,
@@ -34,6 +40,8 @@ http.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    if (error.config?.silent) return Promise.reject(error);
+
     if (response?.status === 403) {
       ElMessage.error(data?.message || t('common.forbidden'));
       return Promise.reject(error);
@@ -46,8 +54,8 @@ http.interceptors.response.use(
   },
 );
 
-export async function get<T>(url: string, params?: Record<string, unknown>) {
-  const response = await http.get<ApiResponse<T>>(url, { params });
+export async function get<T>(url: string, params?: Record<string, unknown>, options?: { silent?: boolean }) {
+  const response = await http.get<ApiResponse<T>>(url, { params, silent: options?.silent });
   return unwrapApiResponse(response.data);
 }
 
