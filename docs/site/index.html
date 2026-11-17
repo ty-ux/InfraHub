@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="InfraHub 是一个可自部署的交付与运维平台。用流水线构建和部署应用，查看实时日志，追踪版本并回滚。">
+  <title>InfraHub · 应用交付与基础设施管理</title>
+  <link rel="stylesheet" href="./site.css">
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <header class="topbar">
+    <div class="shell masthead">
+      <a class="brand" href="./" aria-label="InfraHub 首页">
+        <span class="mark" aria-hidden="true">IH</span>
+        InfraHub
+      </a>
+      <nav aria-label="站点导航">
+        <a href="#features">功能</a>
+        <a href="#deploy">部署</a>
+        <a href="https://github.com/ty-ux/InfraHub">GitHub <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="shell hero" aria-labelledby="intro-title">
+      <h1 id="intro-title">从代码构建，<br>到按版本回滚。</h1>
+      <div class="hero-intro">
+        <p>InfraHub 是一个可自部署的交付与运维平台。在同一个控制台配置流水线、查看部署日志和实例状态，并在需要时恢复到历史版本。</p>
+        <div class="actions">
+          <a class="button primary" href="#deploy">开始部署 <span aria-hidden="true">↓</span></a>
+          <a class="source-link" href="https://github.com/ty-ux/InfraHub">查看源码 <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+      <figure class="preview">
+        <img src="./assets/pipeline.webp" width="1440" height="650" fetchpriority="high" alt="InfraHub 控制台的流水线执行详情，显示阶段状态、步骤耗时以及健康检查日志">
+        <figcaption><span>流水线执行详情 · 示例数据</span><a href="./assets/pipeline.webp">查看大图 <span aria-hidden="true">↗</span></a></figcaption>
+      </figure>
+    </section>
+
+    <section class="shell features" id="features" aria-labelledby="features-title">
+      <h2 id="features-title">在一个平台上交付和运维</h2>
+      <div class="feature-list">
+        <article>
+          <h3>按阶段执行流水线</h3>
+          <p>把拉取代码、构建镜像、部署和健康检查编排进同一次运行，实时查看整次运行或单个步骤的日志。</p>
+        </article>
+        <article>
+          <h3>按历史版本回滚</h3>
+          <p>查看发布生成的版本与制品。需要恢复时，在应用的部署记录中选择目标环境、服务和历史版本。</p>
+        </article>
+        <article>
+          <h3>管理运行实例与权限</h3>
+          <p>集中管理应用、环境和主机，查看实例状态与日志，按角色分配页面、操作和应用范围的权限。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell deployment" id="deploy" aria-labelledby="deploy-title">
+      <h2 id="deploy-title">用 Docker Compose 部署</h2>
+      <p class="deployment-intro">准备 Git 和 Docker Compose v2。下面的步骤从仓库源码构建镜像。</p>
+      <ol class="setup">
+        <li>
+          <h3>获取源码和配置模板</h3>
+          <pre tabindex="0" aria-label="获取源码的命令"><code>git clone https://github.com/ty-ux/InfraHub.git
+cd InfraHub
+cp deploy/.env.example .env</code></pre>
+          <p>Windows PowerShell 可用 <code>Copy-Item deploy/.env.example .env</code> 复制模板。</p>
+        </li>
+        <li>
+          <h3>填写配置并启动</h3>
+          <p>在 <code>.env</code> 中设置 <code>POSTGRES_PASSWORD</code>、至少 32 字节的随机 <code>JWT_SECRET</code>，以及至少 15 个字符的 <code>INFRAHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD</code>。</p>
+          <pre tabindex="0" aria-label="启动 InfraHub 的命令"><code>docker compose up -d --build</code></pre>
+          <p>启动后在部署机器上打开 <code>http://localhost:8088</code>，使用 <code>admin</code> 和设置的初始密码登录，按提示修改密码。</p>
+        </li>
+      </ol>
+      <a class="doc-link" href="https://github.com/ty-ux/InfraHub#readme">查看仓库说明 <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+
+  <footer class="shell footer">
+    <span>InfraHub</span>
+    <a href="https://github.com/ty-ux/InfraHub">GitHub 仓库 <span aria-hidden="true">↗</span></a>
+  </footer>
+</body>
+</html>

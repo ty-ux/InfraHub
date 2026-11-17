@@ -9,6 +9,8 @@
 
 <p align="center">基础设施交付与运维平台 · 流水线、版本回滚、资源管理与监控告警</p>
 
+<p align="center"><a href="https://ty-ux.github.io/InfraHub/">项目介绍与部署指南</a></p>
+
 ## 核心功能
 
 | 模块 | 功能 |
