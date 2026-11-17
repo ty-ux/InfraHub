@@ -1,0 +1,107 @@
+name: Publish container images
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths:
+      - '.github/workflows/container-images.yml'
+      - '.dockerignore'
+      - 'pom.xml'
+      - 'infrahub-*/**'
+      - 'db/bootstrap/**'
+      - 'db/flyway/**'
+      - 'deploy/nginx.conf'
+      - 'docker-compose.yml'
+      - 'docker-compose.images.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: container-images-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      IMAGE_TAG: sha-${{ github.sha }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Determine image names and tags
+        run: |
+          alias_tag="${GITHUB_REF_NAME}"
+          if [[ ! "$alias_tag" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]; then
+            echo "::error::The Git tag must also be a valid Docker image tag."
+            exit 1
+          fi
+          echo "IMAGE_PREFIX=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+          echo "IMAGE_ALIAS=$alias_tag" >> "$GITHUB_ENV"
+
+      - name: Build backend and frontend
+        run: |
+          docker buildx build --platform linux/amd64 --load \
+            --label "org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --tag "$IMAGE_PREFIX-backend:$IMAGE_TAG" \
+            --file infrahub-web/Dockerfile .
+          docker buildx build --platform linux/amd64 --load \
+            --label "org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --tag "$IMAGE_PREFIX-frontend:$IMAGE_TAG" \
+            --file infrahub-console/Dockerfile .
+
+      - name: Verify both images with Docker Compose
+        run: |
+          export INFRAHUB_IMAGE_PREFIX="$IMAGE_PREFIX"
+          export INFRAHUB_IMAGE_TAG="$IMAGE_TAG"
+          export POSTGRES_PASSWORD="$(openssl rand -hex 24)"
+          export JWT_SECRET="$(openssl rand -hex 32)"
+          export INFRAHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD="$(openssl rand -hex 24)"
+          compose=(docker compose -p infrahub-image-smoke -f docker-compose.yml -f docker-compose.images.yml)
+          cleanup() {
+            local result=$?
+            if (( result != 0 )); then
+              "${compose[@]}" logs --no-color --tail=80 >&2 || true
+            fi
+            "${compose[@]}" down --volumes || true
+          }
+          trap cleanup EXIT
+          "${compose[@]}" up --detach --no-build --wait --wait-timeout 180
+          curl --fail --silent --show-error http://127.0.0.1:8088/ --output /tmp/infrahub-index.html
+          grep --quiet '<div id="app"></div>' /tmp/infrahub-index.html
+          curl --fail --silent --show-error http://127.0.0.1:8088/actuator/health | jq -e '.status == "UP"'
+          curl --fail --silent --show-error http://127.0.0.1:8088/api/auth/email/features | jq -e '.code == "SUCCESS" and (.data | type == "object")'
+
+      - name: Publish verified images to GHCR
+        env:
+          GHCR_TOKEN: ${{ github.token }}
+        run: |
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          trap 'docker logout ghcr.io' EXIT
+          for service in backend frontend; do
+            docker push "$IMAGE_PREFIX-$service:$IMAGE_TAG"
+          done
+          for service in backend frontend; do
+            docker tag "$IMAGE_PREFIX-$service:$IMAGE_TAG" "$IMAGE_PREFIX-$service:$IMAGE_ALIAS"
+            docker push "$IMAGE_PREFIX-$service:$IMAGE_ALIAS"
+          done
+          {
+            echo "### Published InfraHub images (linux/amd64)"
+            echo
+            printf -- '- `%s-%s:%s` (`%s`)\n' "$IMAGE_PREFIX" backend "$IMAGE_TAG" "$IMAGE_ALIAS"
+            printf -- '- `%s-%s:%s` (`%s`)\n' "$IMAGE_PREFIX" frontend "$IMAGE_TAG" "$IMAGE_ALIAS"
+          } >> "$GITHUB_STEP_SUMMARY"

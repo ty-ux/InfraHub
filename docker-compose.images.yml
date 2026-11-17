@@ -1,0 +1,7 @@
+services:
+  backend:
+    build: !reset null
+    image: ${INFRAHUB_IMAGE_PREFIX:-ghcr.io/ty-ux/infrahub}-backend:${INFRAHUB_IMAGE_TAG:-main}
+  frontend:
+    build: !reset null
+    image: ${INFRAHUB_IMAGE_PREFIX:-ghcr.io/ty-ux/infrahub}-frontend:${INFRAHUB_IMAGE_TAG:-main}

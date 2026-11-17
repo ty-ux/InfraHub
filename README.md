@@ -26,9 +26,18 @@
 
 ## 快速开始
 
-### Docker Compose
+### Docker Compose（预构建镜像）
 
-复制 `deploy/.env.example` 为仓库根目录的 `.env`。填写 `POSTGRES_PASSWORD`、至少 32 字节的随机 `JWT_SECRET` 和首次登录用的 `INFRAHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD`，然后执行 `docker compose up -d --build`。
+克隆本仓库，复制 `deploy/.env.example` 为根目录的 `.env`。填写 `POSTGRES_PASSWORD`、至少 32 字节的随机 `JWT_SECRET` 和首次登录用的 `INFRAHUB_AUTH_BOOTSTRAP_ADMIN_PASSWORD`（至少 15 个字符），然后在仓库根目录执行：
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.images.yml pull
+docker compose -f docker-compose.yml -f docker-compose.images.yml up -d --no-build
+```
+
+预构建镜像支持 Linux x86-64，默认拉取 `main` 标签。需要固定版本时，在 `.env` 中设置 `INFRAHUB_IMAGE_TAG`，使用 [Actions 构建记录](https://github.com/ty-ux/InfraHub/actions/workflows/container-images.yml) 中的 `sha-<提交 SHA>` 或已发布的 `v*` 标签。检出对应的 Git 提交可保持数据库初始化脚本与镜像一致。
+
+从源码构建时，在仓库根目录执行 `docker compose up -d --build`。
 
 控制台默认监听 [localhost:8088](http://localhost:8088)。首次用 `admin` 登录后，按页面提示修改密码。
 
