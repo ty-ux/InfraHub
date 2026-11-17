@@ -1,7 +1,8 @@
 <template>
   <CrudPage ref="table" :key="pageKey" :config="config">
-    <template v-if="pageKey === 'systemRoles'" #toolbar-extra>
-      <el-button type="primary" @click="createVisible = true">{{ t('access.createRole') }}</el-button>
+    <template #toolbar-extra>
+      <el-button v-if="pageKey === 'systemRoles'" type="primary" @click="createVisible = true">{{ t('access.createRole') }}</el-button>
+      <el-button v-else type="primary" @click="newUserVisible = true">{{ t('auth.createUser') }}</el-button>
     </template>
     <template #row-actions="{ row }">
       <el-button link type="primary" @click="openEditor(row)">
@@ -81,6 +82,7 @@
       <el-button type="primary" :loading="creating" :disabled="!validRole" @click="create">{{ t('common.create') }}</el-button>
     </template>
   </el-dialog>
+  <CreateUserDialog v-if="newUserVisible" v-model="newUserVisible" @created="refreshUsers" />
 </template>
 
 <script setup lang="ts">
@@ -93,6 +95,7 @@ import CrudPage from '@/components/page/CrudPage.vue';
 import { useAuthStore } from '@/store/auth';
 import { getPageConfig } from '@/views/configs/page-configs';
 import { menuRoutes } from '@/router/routes';
+import CreateUserDialog from './CreateUserDialog.vue';
 
 const route = useRoute();
 const { t } = useI18n();
@@ -112,6 +115,7 @@ const grants = ref<RoleGrants>({ appScope: 'SELECTED', permissionIds: [], appIds
 const userRoleIds = ref<number[]>([]);
 const activeTab = ref('pages');
 const createVisible = ref(false);
+const newUserVisible = ref(false);
 const creating = ref(false);
 const newRoleCode = ref('');
 const newRoleName = ref('');
@@ -197,6 +201,10 @@ async function create() {
   } finally {
     creating.value = false;
   }
+}
+
+function refreshUsers() {
+  void table.value?.fetchData().catch(() => {});
 }
 </script>
 

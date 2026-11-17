@@ -14,10 +14,22 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = computed(() => Boolean(token.value));
 
   async function login(username: string, password: string) {
-    const result = await authApi.login({ username, password });
+    await acceptToken(await authApi.login({ username, password }));
+  }
+
+  async function changePassword(currentPassword: string, newPassword: string) {
+    await acceptToken(await authApi.changePassword(currentPassword, newPassword));
+  }
+
+  async function acceptToken(result: Awaited<ReturnType<typeof authApi.login>>) {
     token.value = result.accessToken;
     setToken(result.accessToken);
-    await fetchCurrentUser();
+    try {
+      await fetchCurrentUser();
+    } catch (error) {
+      logout();
+      throw error;
+    }
   }
 
   async function fetchCurrentUser() {
@@ -70,6 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
     initialized,
     isLoggedIn,
     login,
+    changePassword,
     init,
     logout,
     canAccess,

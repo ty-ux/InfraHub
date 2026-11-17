@@ -13,6 +13,8 @@ public class UserContext {
     private Long userId;
     private String username;
     private String displayName;
+    private boolean mustChangePassword;
+    private int credentialVersion;
     private Set<String> authorities;
     @Builder.Default
     private Set<String> allAppPermissions = Set.of();

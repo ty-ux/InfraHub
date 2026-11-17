@@ -104,18 +104,15 @@
             <h2>{{ t('auth.signIn') }}</h2>
             <p>{{ t('auth.hint') }}</p>
           </div>
-          <el-form ref="formRef" :model="form" :rules="rules" label-position="top" @keyup.enter="submit">
+          <el-form ref="formRef" :model="form" :rules="rules" label-position="top" @submit.prevent="submit">
             <el-form-item :label="t('auth.username')" prop="username">
               <el-input v-model="form.username" autocomplete="username" :placeholder="t('auth.enterUsername')" />
             </el-form-item>
             <el-form-item :label="t('auth.password')" prop="password">
               <el-input v-model="form.password" type="password" autocomplete="current-password" show-password :placeholder="t('auth.enterPassword')" />
             </el-form-item>
-            <el-button type="primary" :loading="loading" class="submit-btn" @click="submit">{{ t('auth.login') }}</el-button>
+            <el-button type="primary" native-type="submit" :loading="loading" class="submit-btn">{{ t('auth.login') }}</el-button>
           </el-form>
-          <div class="default-hint">
-            <span>{{ t('auth.defaultAccount') }}</span>
-          </div>
         </div>
       </section>
     </div>
@@ -139,8 +136,8 @@ const { theme, toggleTheme } = useTheme();
 const formRef = ref<FormInstance>();
 const loading = ref(false);
 const form = reactive({
-  username: 'admin',
-  password: 'admin123',
+  username: '',
+  password: '',
 });
 
 const rules: FormRules = {
@@ -149,12 +146,16 @@ const rules: FormRules = {
 };
 
 async function submit() {
-  await formRef.value?.validate();
+  if (loading.value || !await formRef.value?.validate().catch(() => false)) return;
   loading.value = true;
   try {
-    await authStore.login(form.username, form.password);
-    ElMessage.success(t('auth.loginSuccess'));
-    router.replace(String(route.query.redirect || '/workspace'));
+    await authStore.login(form.username.trim(), form.password);
+    if (!authStore.currentUser?.mustChangePassword) ElMessage.success(t('auth.loginSuccess'));
+    const redirect = typeof route.query.redirect === 'string' && /^\/(?![/\\])/.test(route.query.redirect)
+      ? route.query.redirect : '/workspace';
+    await router.replace(redirect);
+  } catch {
+    // Request errors are shown by the HTTP client.
   } finally {
     loading.value = false;
   }
@@ -513,17 +514,6 @@ async function submit() {
   height: var(--control-h);
   margin: var(--space-xs) 0 var(--space-md);
   font-weight: 500;
-}
-
-.default-hint {
-  padding-top: var(--space-sm);
-  border-top: var(--rule-hair) solid var(--color-rule);
-
-  span {
-    color: var(--color-placeholder);
-    font-size: var(--text-2xs);
-    line-height: 1.5;
-  }
 }
 
 @media (max-width: 900px) {

@@ -6,6 +6,7 @@ import com.infrahub.common.error.ErrorCode;
 import com.infrahub.common.exception.BizException;
 import com.infrahub.system.entity.SysPermission;
 import com.infrahub.system.entity.SysRole;
+import com.infrahub.system.entity.SysUser;
 import com.infrahub.system.mapper.SysAccessMapper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +14,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +31,7 @@ public class SysAccessService {
     private final SysRoleService roles;
     private final SysUserService users;
     private final SysPermissionService permissions;
+    private final PasswordEncoder passwordEncoder;
 
     public Catalog catalog() {
         return new Catalog(roles.lambdaQuery().orderByAsc(SysRole::getId).list(),
@@ -37,6 +41,29 @@ public class SysAccessService {
 
     public Set<Long> userRoles(Long userId) {
         return new HashSet<>(mapper.userRoles(userId));
+    }
+
+    @Transactional
+    public Long createUser(NewUser request) {
+        LocalPasswordPolicy.validate(request.initialPassword());
+        if (!request.roleIds().isEmpty() && roles.listByIds(request.roleIds()).stream()
+                .filter(role -> "ENABLED".equals(role.getStatus())).count() != request.roleIds().size()) {
+            throw invalid("所选角色不存在或未启用");
+        }
+        SysUser user = new SysUser();
+        user.setUsername(request.username());
+        user.setDisplayName(request.displayName().trim());
+        user.setAuthType("LOCAL");
+        user.setPasswordHash(passwordEncoder.encode(request.initialPassword()));
+        user.setStatus("ENABLED");
+        user.setMustChangePassword(true);
+        try {
+            users.save(user);
+        } catch (DuplicateKeyException exception) {
+            throw invalid("用户名已存在");
+        }
+        request.roleIds().forEach(roleId -> mapper.addUserRole(user.getId(), roleId));
+        return user.getId();
     }
 
     @Transactional
@@ -114,5 +141,11 @@ public class SysAccessService {
 
     public record NewRole(@NotBlank @Size(max = 64) @Pattern(regexp = "[A-Z][A-Z0-9_]*") String roleCode,
                           @NotBlank @Size(max = 128) String roleName) {
+    }
+
+    public record NewUser(@NotBlank @Size(max = 64) @Pattern(regexp = "[A-Za-z0-9][A-Za-z0-9_.-]*") String username,
+                          @NotBlank @Size(max = 128) String displayName,
+                          @NotBlank @Size(max = 72) String initialPassword,
+                          @NotNull @Size(max = 250) Set<@NotNull @Positive Long> roleIds) {
     }
 }

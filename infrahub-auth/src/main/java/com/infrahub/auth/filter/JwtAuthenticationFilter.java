@@ -17,10 +17,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    public static final String PASSWORD_CHANGE_REQUIRED = "PASSWORD_CHANGE_REQUIRED";
 
     private final JwtTokenProvider jwtTokenProvider;
     private final SysUserService sysUserService;
@@ -37,12 +40,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authorization != null && authorization.startsWith("Bearer ")) {
             String token = authorization.substring(7);
             try {
-                UserContext identity = jwtTokenProvider.parseToken(token);
-                var user = sysUserService.getById(identity.getUserId());
-                if (user == null || !"ENABLED".equals(user.getStatus()) || !user.getUsername().equals(identity.getUsername())) {
+                var identity = jwtTokenProvider.parseToken(token);
+                var user = sysUserService.getById(identity.userId());
+                if (user == null || !"ENABLED".equals(user.getStatus()) || !user.getUsername().equals(identity.username())
+                        || user.getCredentialVersion() != identity.credentialVersion()) {
                     throw new JwtException("Inactive account");
                 }
-                UserContext userContext = sysUserService.getActiveContext(user);
+                UserContext userContext = user.isMustChangePassword()
+                        ? UserContext.builder().userId(user.getId()).username(user.getUsername())
+                            .displayName(user.getDisplayName()).mustChangePassword(true)
+                            .credentialVersion(user.getCredentialVersion()).authorities(Set.of(PASSWORD_CHANGE_REQUIRED)).build()
+                        : sysUserService.getActiveContext(user);
                 UserContextHolder.set(userContext);
                 MDC.put("userId", String.valueOf(userContext.getUserId()));
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

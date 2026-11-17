@@ -28,6 +28,7 @@ export interface CurrentUserResponse {
   userId: number;
   username: string;
   displayName: string;
+  mustChangePassword?: boolean;
   authorities: string[];
   allAppPermissions?: string[];
   applicationPermissions?: Record<string, number[]>;

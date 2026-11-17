@@ -34,7 +34,8 @@ public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
         authorities.addAll(global);
         authorities.addAll(scopes.keySet());
         return UserContext.builder().userId(user.getId()).username(user.getUsername())
-                .displayName(user.getDisplayName()).authorities(authorities)
+                .displayName(user.getDisplayName()).mustChangePassword(user.isMustChangePassword())
+                .credentialVersion(user.getCredentialVersion()).authorities(authorities)
                 .allAppPermissions(global).applicationPermissions(scopes).build();
     }
 }

@@ -13,4 +13,7 @@ export const authApi = {
   me() {
     return get<CurrentUserResponse>('/api/auth/me');
   },
+  changePassword(currentPassword: string, newPassword: string) {
+    return post<AuthTokenResponse>('/api/auth/password', { currentPassword, newPassword });
+  },
 };

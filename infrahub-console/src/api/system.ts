@@ -13,6 +13,13 @@ export interface RoleOption {
   status: string;
 }
 
+export interface NewUser {
+  username: string;
+  displayName: string;
+  initialPassword: string;
+  roleIds: number[];
+}
+
 export interface RoleGrants {
   appScope: 'ALL' | 'SELECTED';
   permissionIds: number[];
@@ -33,4 +40,5 @@ export const accessApi = {
   roleGrants: (id: number) => get<RoleGrants>(`/api/roles/${id}/grants`),
   saveRoleGrants: (id: number, grants: RoleGrants) => put<boolean>(`/api/roles/${id}/grants`, grants),
   createRole: (roleCode: string, roleName: string) => post<number>('/api/roles', { roleCode, roleName }),
+  createUser: (user: NewUser) => post<number>('/api/users', user),
 };

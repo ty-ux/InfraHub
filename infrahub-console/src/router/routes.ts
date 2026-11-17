@@ -267,6 +267,11 @@ export const routes: RouteRecordRaw[] = [
     meta: { title: 'routes.login', hidden: true },
   },
   {
+    path: '/account/password',
+    component: () => import('@/views/auth/ChangePasswordView.vue'),
+    meta: { title: 'auth.changePassword', hidden: true },
+  },
+  {
     path: '/',
     component: MainLayoutClean,
     redirect: '/workspace',

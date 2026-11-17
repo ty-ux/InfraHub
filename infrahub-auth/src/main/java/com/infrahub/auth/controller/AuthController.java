@@ -2,6 +2,7 @@ package com.infrahub.auth.controller;
 
 import com.infrahub.auth.dto.AuthLoginRequest;
 import com.infrahub.auth.dto.AuthTokenResponse;
+import com.infrahub.auth.dto.ChangePasswordRequest;
 import com.infrahub.auth.dto.CurrentUserResponse;
 import com.infrahub.auth.service.AuthService;
 import com.infrahub.common.api.ApiResponse;
@@ -29,5 +30,10 @@ public class AuthController {
     @GetMapping("/me")
     public ApiResponse<CurrentUserResponse> me() {
         return ApiResponse.success(authService.currentUser(), TraceIdHolder.get());
+    }
+
+    @PostMapping("/password")
+    public ApiResponse<AuthTokenResponse> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        return ApiResponse.success(authService.changePassword(request), TraceIdHolder.get());
     }
 }

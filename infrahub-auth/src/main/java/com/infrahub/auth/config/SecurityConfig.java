@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationManagers;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,8 +33,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/actuator/health", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                         .permitAll()
+                        .requestMatchers("/api/auth/me", "/api/auth/password").authenticated()
                         .anyRequest()
-                        .authenticated())
+                        .access(AuthorizationManagers.allOf(AuthenticatedAuthorizationManager.authenticated(),
+                                (authentication, context) -> new AuthorizationDecision(authentication.get().getAuthorities().stream()
+                                        .noneMatch(authority -> JwtAuthenticationFilter.PASSWORD_CHANGE_REQUIRED.equals(authority.getAuthority()))))))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

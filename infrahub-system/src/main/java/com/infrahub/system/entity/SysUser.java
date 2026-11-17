@@ -22,4 +22,7 @@ public class SysUser extends SimpleTimeEntity {
     private String passwordHash;
     private String status;
     private OffsetDateTime lastLoginAt;
+    private boolean mustChangePassword;
+    @JsonIgnore
+    private int credentialVersion;
 }

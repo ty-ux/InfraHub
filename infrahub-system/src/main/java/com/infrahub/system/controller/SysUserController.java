@@ -31,6 +31,11 @@ public class SysUserController {
         return ApiResponse.success(PageResponse.from(sysUserService.page(new Page<>(query.getPageNum(), query.getPageSize()))), TraceIdHolder.get());
     }
 
+    @PostMapping
+    public ApiResponse<Long> create(@Valid @RequestBody SysAccessService.NewUser body) {
+        return ApiResponse.success(access.createUser(body), TraceIdHolder.get());
+    }
+
     @GetMapping("/{id}/roles")
     public ApiResponse<Set<Long>> roles(@PathVariable Long id) {
         return ApiResponse.success(access.userRoles(id), TraceIdHolder.get());

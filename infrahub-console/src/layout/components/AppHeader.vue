@@ -34,6 +34,9 @@
         <strong>{{ authStore.currentUser?.displayName || authStore.currentUser?.username || t('common.guest') }}</strong>
         <span class="measured">{{ authStore.currentUser?.username || '-' }}</span>
       </div>
+      <el-button link @click="router.push({ path: '/account/password', query: { redirect: route.fullPath } })">
+        {{ t('auth.changePassword') }}
+      </el-button>
       <el-button link class="logout" @click="handleLogout">
         {{ t('common.logout') }}
       </el-button>

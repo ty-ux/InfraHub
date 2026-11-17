@@ -13,6 +13,7 @@ public class CurrentUserResponse {
     private Long userId;
     private String username;
     private String displayName;
+    private boolean mustChangePassword;
     private Set<String> authorities;
     private Set<String> allAppPermissions;
     private Map<String, Set<Long>> applicationPermissions;

@@ -16,6 +16,11 @@ router.beforeEach(async (to) => {
     await authStore.init();
   }
 
+  if (authStore.isLoggedIn && authStore.currentUser?.mustChangePassword && to.path !== '/account/password') {
+    const redirect = to.path === '/login' ? to.query.redirect : to.fullPath;
+    return { path: '/account/password', query: { redirect } };
+  }
+
   if (!requiresAuth) {
     if (authStore.isLoggedIn) {
       return '/workspace';
